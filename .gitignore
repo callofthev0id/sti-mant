@@ -1,0 +1,12 @@
+# Cuentas admin locales (nunca versionar, ver lib/common.ps1)
+lib/sti-cuentas.local
+
+# Build/release artifacts
+dist/
+release/dist/
+
+# Editor / OS cruft
+.vscode/
+*.bak
+Thumbs.db
+desktop.ini

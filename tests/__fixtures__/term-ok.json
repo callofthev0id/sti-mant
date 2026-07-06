@@ -1,0 +1,5 @@
+{ "meta": { "cliente":"DEMO","tag":"demo","hostname":"PC-OK","tipo":"terminales","so":"Windows 11 Pro","soClase":"Win11","fecha":"2026-06-09T10:00:00-03:00","scriptVersion":"0.3","usuario":"Ana","nota":"" },
+  "hardwareIds": { "os_uuid":"u1","disk_serial":"d1","hw_uuid":"h1","mac":["AA:BB"],"bios_serial":"b1","hostname":"PC-OK" },
+  "checks": [ {"categoria":"Seguridad","key":"chk_firewall","label":"Firewall","estado":"Ok","automatizado":true,"detalle":"on","raw":null},
+              {"categoria":"Hardware","key":"chk_espacio_disco","label":"Espacio en disco C:","estado":"Ok","automatizado":true,"detalle":"40% usado","raw":{"pctUsado":40}} ],
+  "errores": [] }

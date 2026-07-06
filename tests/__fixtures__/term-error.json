@@ -1,0 +1,6 @@
+{ "meta": { "cliente":"DEMO","tag":"demo","hostname":"PC-ERR","tipo":"terminales","so":"Windows 10 Pro","soClase":"Win10","fecha":"2026-06-09T11:00:00-03:00","scriptVersion":"0.3","usuario":"Beto","nota":"revisar disco" },
+  "hardwareIds": { "os_uuid":"u2","disk_serial":"d2","hw_uuid":"h2","mac":["CC:DD"],"bios_serial":"b2","hostname":"PC-ERR" },
+  "checks": [ {"categoria":"Seguridad","key":"chk_firewall","label":"Firewall","estado":"Ok","automatizado":true,"detalle":"on","raw":null},
+              {"categoria":"Hardware","key":"chk_disco_smart","label":"Estado disco (SMART)","estado":"Crítico","automatizado":true,"detalle":"HDD en falla","raw":null},
+              {"categoria":"Seguridad","key":"chk_updates","label":"Updates Windows","estado":"Advertencia","automatizado":true,"detalle":"último KB hace 50 días","raw":{"dias":50}} ],
+  "errores": [] }

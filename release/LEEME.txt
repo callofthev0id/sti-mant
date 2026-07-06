@@ -1,0 +1,171 @@
+============================================================
+  STI - HERRAMIENTA DE MANTENIMIENTO
+  Guia rapida para el tecnico
+============================================================
+
+QUE ES
+------
+Un conjunto de scripts que corres en el equipo del cliente durante
+el mantenimiento. Relevan hardware, software y seguridad de forma
+automatica y arman:
+
+  1) Un bloque TSV que pegas en la planilla de mantenimiento.
+  2) Un HTML de relevamiento del equipo (para archivar / subir).
+  3) Un JSON con el detalle de cada chequeo (lo lee el informe y
+     el back-office). NO lo borres: es la fuente del informe.
+
+Ademas genera un INFORME consolidado en HTML juntando todos los
+relevamientos de un cliente.
+
+Podes usarla de dos formas: con INTERFAZ GRAFICA (lo mas comodo,
+es la novedad) o por menu/linea de comandos como siempre.
+
+
+INTERFAZ GRAFICA (lo mas comodo)
+--------------------------------
+Una ventana con cinco pestanas que cubren toda la visita:
+
+  Principal      identificas el equipo (cliente, tag, tipo) y Relevas.
+  Inventario     el hardware del equipo en cards (CPU, RAM, discos, SO).
+  Mantenimiento  la checklist con estado por check + observaciones;
+                 genera el JSON del equipo.
+  Utilidades     caja de herramientas (limpieza, reparaciones, tweaks,
+                 debloat, servicios). Modifica el equipo de verdad.
+  Generar        junta todos los JSON en la planilla y el informe HTML.
+
+Como abrirla:
+
+  - Offline (desde esta carpeta): doble clic en  STI-GUI.bat
+    Lanza la GUI y se auto-eleva (pide UAC una vez).
+
+  - Remoto, en cualquier equipo, desde PowerShell, pega esta linea:
+      irm https://raw.githubusercontent.com/callofthev0id/sti-mant/main/get.ps1 | iex
+    Baja la ultima version y abre la GUI (tambien se auto-eleva).
+    Nota: bajar y correr un script sin firma puede gatillar
+    SmartScreen o el antivirus en algunos equipos. El codigo es
+    abierto (repo callofthev0id/sti-mant). Si molesta, usa STI-GUI.bat.
+
+
+NO necesita internet ni credenciales (salvo el modo remoto irm|iex,
+que baja el script). Corre 100% local.
+
+
+REQUISITOS
+----------
+- Windows 10 / 11 o Windows Server.
+- Conviene ejecutarlo COMO ADMINISTRADOR (clic derecho > Ejecutar
+  como administrador) para que pueda leer todo (firewall, antivirus,
+  eventos, etc.). Si no, algunos chequeos quedan en N/A.
+- No hace falta instalar nada. Es PowerShell + .bat.
+
+
+COMO SE USA (lo mas simple)
+---------------------------
+1. Descomprimi esta carpeta en el equipo (Escritorio, por ejemplo).
+   Manten todos los archivos juntos en la misma carpeta.
+
+2. Doble clic en  STI-Mantenimiento.bat
+
+3. Elegi en el menu:
+
+   [1] Relevar este equipo
+       - Detecta solo si es TERMINAL o SERVIDOR (por el sistema
+         operativo: Windows Server -> servidor). Lo muestra en
+         pantalla ("Tipo de relevamiento: ...").
+       - Te pide el TAG del cliente (nombre corto, = TAG de OCS).
+       - El BACKUP se releva solo si hay Cobian instalado (lee su
+         historial y avisa segun la frecuencia configurada -
+         diario/semanal/mensual). Sin Cobian, queda manual.
+       - Despues de relevar te PREGUNTA los checks manuales (los
+         que no se ven en remoto: hardware visual, perifericos,
+         UPS, etc.): estado [O/A/E/C/N] + nota. Eso entra
+         al TSV / HTML / JSON (asi el informe queda completo).
+         (Opcion 6 del submenu para volver a cargarlos/editarlos.)
+       - Abre un submenu. Lo normal es la opcion 5 = "Todo":
+         genera resumen + TSV (al portapapeles) + HTML + JSON.
+       - El TSV ya queda copiado: anda a la planilla del cliente
+         y pega (Ctrl+V) -- ya incluye lo manual.
+
+   [2] Forzar relevamiento SERVIDOR
+       - Por si la deteccion automatica fallara: releva como
+         servidor de una (TSV + HTML + JSON). Te pide el TAG.
+
+   Dentro de [1], el menu tiene DOS funciones que se complementan:
+     - Mantenimiento de equipo: los chequeos con semaforo para la
+       planilla (lo de siempre).
+     - Relevamiento de equipo: inventario exacto (CPU, RAM, discos
+       y tipo, SO, software instalado, hardware IDs) + datos para
+       auditoria: obsolescencia (fin de soporte SO, TPM, apto Win11,
+       BIOS), seguridad (BitLocker, admins, UAC, SMBv1, TLS),
+       red (IP/DNS/gateway/dominio), agentes ESET/OCS, y salud
+       (BSOD, apagados, servicios, autoruns, bateria).
+       Genera <equipo>_RELEVAMIENTO_<fecha>.html + .json en C:\zback.
+
+   [3] Generar INFORME consolidado
+       - Junta todos los JSON de relevamiento del Escritorio y arma
+         3 HTML: completo, solo terminales y solo servidores.
+
+
+DONDE QUEDAN LOS ARCHIVOS
+-------------------------
+Todo va a la carpeta  C:\zback  (se crea sola si no existe):
+
+  <equipo>_STI_MANT_<tipo>_<fecha>.html   <- relevamiento del equipo
+  <equipo>_STI_MANT_<tipo>_<fecha>.json   <- detalle (NO borrar)
+
+El informe consolidado (tambien en C:\zback):
+
+  <equipo>_Informe_Mantenimiento_<Cliente>_<periodo>_FULL.html
+  <equipo>_Informe_Mantenimiento_<Cliente>_<periodo>_TERMINALES.html
+  <equipo>_Informe_Mantenimiento_<Cliente>_<periodo>_SERVIDORES.html
+
+(Todos los archivos arrancan con el nombre del equipo.)
+
+
+FLUJO COMPLETO DE UNA VISITA
+----------------------------
+1. En cada equipo: opcion [1] o [2]. Pega el TSV en la planilla.
+   Los .json/.html quedan en C:\zback.
+2. Si relevaste varios equipos desde un mismo punto, los .json ya
+   estan juntos en C:\zback. Si no, juntalos ahi.
+3. Opcion [3]: genera el informe consolidado (lee C:\zback).
+4. Sube los .json a la carpeta del cliente en Drive: el back-office
+   completa la planilla general y arma el informe oficial.
+
+
+USO AVANZADO (linea de comandos)
+--------------------------------
+Relevamiento directo, sin menu:
+
+  powershell -ExecutionPolicy Bypass -File sti-mant.ps1 -Tag <nc> ^
+    [-Tipo terminales|servidores] [-Cliente "Nombre"] ^
+    [-Usuario "usuario del equipo"] [-Nota "obs"] [-InstallOCS]
+
+  -Tag       nombre corto del cliente (= TAG de OCS). Obligatorio.
+  -Tipo      terminales|servidores. OPCIONAL: si no lo pasas,
+             auto-detecta por el SO (Windows Server -> servidores).
+  -Usuario   usuario del equipo (va a la planilla).
+  -Nota      observacion libre.
+  -InstallOCS  si pones tu propio OcsPackage-x64.exe en esta carpeta,
+               lo instala. Por defecto solo verifica si el agente esta.
+
+Informe desde una carpeta de JSON (por defecto C:\zback):
+
+  powershell -ExecutionPolicy Bypass -File sti-informe.ps1 ^
+    [-Carpeta "C:\ruta\a\los\json"] [-Cliente "Nombre"] ^
+    [-Periodo 2026-06] [-Salida "C:\donde\guardar"]
+
+
+PROBLEMAS FRECUENTES
+--------------------
+- "No se puede ejecutar scripts": usa el .bat (ya pasa
+  -ExecutionPolicy Bypass). No hace falta cambiar nada del sistema.
+- Chequeos en N/A: corre como Administrador.
+- El TSV no se pego: volve a correr la opcion de TSV; queda copiado
+  al portapapeles. Tambien se guarda el HTML por las dudas.
+- Acentos raros en pantalla: es cosmetico, no afecta los archivos.
+
+
+============================================================
+  STI Mantenimiento  -  proyecto de portfolio / demo
+============================================================
