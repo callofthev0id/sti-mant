@@ -1,5 +1,5 @@
 ﻿# build.ps1 - fusiona lib + modules + cada entry-point en dist/<entry>-v<ver>.ps1 (UTF-8 BOM).
-# Entry-points: sti-mant (relevamiento) y sti-informe (informe local). Cada uno reemplaza su
+# Entry-points: fleet-mant (relevamiento) y fleet-informe (informe local). Cada uno reemplaza su
 # bloque de dot-source por el contenido inline de lib+modules.
 param([string]$Version = '0.1')
 
@@ -11,7 +11,7 @@ function Get-Body([string]$path) {
   $t.TrimStart([char]0xFEFF)
 }
 
-# lib en orden de dependencia (común primero). score/informe-* los usa sti-informe; inocuos para sti-mant.
+# lib en orden de dependencia (común primero). score/informe-* los usa fleet-informe; inocuos para fleet-mant.
 $libOrder = @('lib\common.ps1','lib\thresholds.ps1','lib\runspace.ps1','lib\output.ps1',
               'lib\manual.ps1','lib\cobian.ps1','lib\inv-obsolescencia.ps1','lib\inv-seguridad.ps1',
               'lib\inv-contexto.ps1','lib\inv-salud.ps1','lib\inventario.ps1','lib\core.ps1',
@@ -46,6 +46,6 @@ function Build-Entry([string]$EntryFile, [string]$OutName) {
   Write-Host "Build OK: $dist ($($content.Length) chars)"
 }
 
-Build-Entry 'sti-mant.ps1'    "sti-mant-v$Version.ps1"
-Build-Entry 'sti-informe.ps1' "sti-informe-v$Version.ps1"
-Build-Entry 'gui\sti-gui.ps1' "sti-gui-v$Version.ps1"
+Build-Entry 'fleet-mant.ps1'    "fleet-mant-v$Version.ps1"
+Build-Entry 'fleet-informe.ps1' "fleet-informe-v$Version.ps1"
+Build-Entry 'gui\fleet-gui.ps1' "fleet-gui-v$Version.ps1"

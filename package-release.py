@@ -4,7 +4,7 @@
 El instalador de OCS (OcsPackage-x64.exe) es un agente de terceros y NO se distribuye en el zip
 publico. El script lo usa solo si esta presente localmente junto al .ps1, pero el paquete no lo incluye.
 
-Prerequisito: correr antes `build.ps1 -Version <ver>` (genera dist/sti-*-v<ver>.ps1, incluido sti-gui).
+Prerequisito: correr antes `build.ps1 -Version <ver>` (genera dist/fleet-*-v<ver>.ps1, incluido fleet-gui).
 Uso:  python3 package-release.py <version> [salida_dir]
 Salida: <salida_dir>/fleet-maintenance-toolkit-v<ver>/  +  fleet-maintenance-toolkit-v<ver>.zip
 """
@@ -20,9 +20,9 @@ GUI_BAT = (
     "@echo off\r\n"
     "net session >nul 2>&1\r\n"
     "if %errorlevel% neq 0 (\r\n"
-    '  powershell -NoProfile -ExecutionPolicy Bypass -Command "Start-Process powershell -ArgumentList \'-NoProfile -ExecutionPolicy Bypass -STA -WindowStyle Hidden -File \"\"%~dp0sti-gui.ps1\"\"\' -Verb RunAs"\r\n'
+    '  powershell -NoProfile -ExecutionPolicy Bypass -Command "Start-Process powershell -ArgumentList \'-NoProfile -ExecutionPolicy Bypass -STA -WindowStyle Hidden -File \"\"%~dp0fleet-gui.ps1\"\"\' -Verb RunAs"\r\n'
     ") else (\r\n"
-    '  start "" powershell -NoProfile -ExecutionPolicy Bypass -STA -WindowStyle Hidden -File "%~dp0sti-gui.ps1"\r\n'
+    '  start "" powershell -NoProfile -ExecutionPolicy Bypass -STA -WindowStyle Hidden -File "%~dp0fleet-gui.ps1"\r\n'
     ")\r\n"
     "exit /b\r\n"
 )
@@ -48,9 +48,9 @@ def main():
     out_dir = Path(sys.argv[2]).resolve() if len(sys.argv) > 2 else (root / "release" / "dist")
     bundle = out_dir / f"fleet-maintenance-toolkit-v{ver}"
 
-    mant = root / f"dist/sti-mant-v{ver}.ps1"
-    informe = root / f"dist/sti-informe-v{ver}.ps1"
-    gui = root / f"dist/sti-gui-v{ver}.ps1"
+    mant = root / f"dist/fleet-mant-v{ver}.ps1"
+    informe = root / f"dist/fleet-informe-v{ver}.ps1"
+    gui = root / f"dist/fleet-gui-v{ver}.ps1"
     for p in (mant, informe, gui):
         if not p.exists():
             sys.exit(f"falta {p} (corriste build.ps1 -Version {ver}?)")
@@ -59,14 +59,14 @@ def main():
         shutil.rmtree(bundle)
     bundle.mkdir(parents=True)
 
-    # ps1 single-file -> nombres bare (los bats referencian sti-mant.ps1 / sti-informe.ps1 / sti-gui.ps1)
-    shutil.copyfile(mant, bundle / "sti-mant.ps1")
-    shutil.copyfile(informe, bundle / "sti-informe.ps1")
-    shutil.copyfile(gui, bundle / "sti-gui.ps1")
+    # ps1 single-file -> nombres bare (los bats referencian fleet-mant.ps1 / fleet-informe.ps1 / fleet-gui.ps1)
+    shutil.copyfile(mant, bundle / "fleet-mant.ps1")
+    shutil.copyfile(informe, bundle / "fleet-informe.ps1")
+    shutil.copyfile(gui, bundle / "fleet-gui.ps1")
     # NOTA: OcsPackage-x64.exe (agente de inventario de terceros) NO se empaqueta en el release publico.
     norm_bat(root / "release/fleet-toolkit.bat", bundle / "fleet-toolkit.bat")
-    norm_bat(root / "sti-mant.bat", bundle / "sti-mant.bat")
-    norm_bat(root / "sti-informe.bat", bundle / "sti-informe.bat")
+    norm_bat(root / "fleet-mant.bat", bundle / "fleet-mant.bat")
+    norm_bat(root / "fleet-informe.bat", bundle / "fleet-informe.bat")
     (bundle / "Fleet-GUI.bat").write_bytes(GUI_BAT.encode("utf-8"))
     norm_txt(root / "release/LEEME.txt", bundle / "LEEME.txt")
 

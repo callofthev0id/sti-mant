@@ -1,6 +1,6 @@
-﻿# sti-mant.ps1 - relevamiento de mantenimiento (terminales + servidores).
-# Uso directo:  PowerShell -ExecutionPolicy Bypass -File sti-mant.ps1 -Tag <nc> [-Tipo terminales|servidores] [-Cliente "X"] [-InstallOCS]
-# Menú interactivo: ... -Menu     (o lanzar sti-mant.bat)
+﻿# fleet-mant.ps1 - relevamiento de mantenimiento (terminales + servidores).
+# Uso directo:  PowerShell -ExecutionPolicy Bypass -File fleet-mant.ps1 -Tag <nc> [-Tipo terminales|servidores] [-Cliente "X"] [-InstallOCS]
+# Menú interactivo: ... -Menu     (o lanzar fleet-mant.bat)
 # Salidas: ① TSV (orden column-spec) al portapapeles · ② HTML + ③ JSON de relevamiento en C:\zback.
 # Módulos en paralelo (Runspace Pool, fallback a secuencia). Versión: $SCRIPT_VERSION (lib/common.ps1).
 [CmdletBinding()]

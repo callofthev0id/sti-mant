@@ -1,5 +1,5 @@
 ﻿# gui/lib/gui-runspace.ps1 - corre el relevamiento en un runspace propio para no congelar
-# el hilo STA de WPF. La UI drena la cola de progreso por DispatcherTimer (ver sti-gui.ps1).
+# el hilo STA de WPF. La UI drena la cola de progreso por DispatcherTimer (ver fleet-gui.ps1).
 
 # Captura las definiciones de funcion de la sesion actual + las variables del core en un
 # InitialSessionState. Asi el runspace de fondo arranca con Invoke-Relevamiento, los modulos,

@@ -1,5 +1,5 @@
 ﻿# lib/core.ps1 - nucleo reutilizable de relevamiento (contexto + orquestacion de modulos).
-# Lo comparten el entry CLI (sti-mant.ps1) y la GUI (gui/sti-gui.ps1). NO ejecuta nada al cargar:
+# Lo comparten el entry CLI (fleet-mant.ps1) y la GUI (gui/fleet-gui.ps1). NO ejecuta nada al cargar:
 # solo define $MOD_FNS, New-MantContext e Invoke-Relevamiento. Depende de common.ps1 (Get-OsInfo,
 # Get-FormFactor, Get-HardwareIds, $FLEET_CUENTAS_ADMIN) y runspace.ps1 (Invoke-ModulesParallel).
 

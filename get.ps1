@@ -2,7 +2,7 @@
 # Uso en cualquier equipo Windows, desde PowerShell:
 #   irm https://raw.githubusercontent.com/callofthev0id/sti-mant/main/get.ps1 | iex
 #
-# Que hace: descarga la ultima version publicada (latest release) de sti-gui a una carpeta
+# Que hace: descarga la ultima version publicada (latest release) de fleet-gui a una carpeta
 # temporal y la abre, auto-elevando (UAC) para que las Utilidades y los checks que leen estado
 # del sistema funcionen. La GUI corre en su propio proceso STA (WPF lo exige); este script solo
 # resuelve la descarga y el lanzamiento, no carga la GUI en el proceso del pipe.
@@ -18,24 +18,24 @@ try {
 
 Write-Paso 'Buscando la ultima version publicada...'
 try {
-  $rel = Invoke-RestMethod -Uri "https://api.github.com/repos/$repo/releases/latest" -Headers @{ 'User-Agent' = 'sti-mant-bootstrap' }
+  $rel = Invoke-RestMethod -Uri "https://api.github.com/repos/$repo/releases/latest" -Headers @{ 'User-Agent' = 'fleet-mant-bootstrap' }
 } catch {
   Write-Host "[FLEET] No se pudo consultar el ultimo release ($($_.Exception.Message))." -ForegroundColor Red
   Write-Host '      Verifica la conexion a internet y volve a intentar.' -ForegroundColor Red
   return
 }
 
-# Asset preferido: el dist single-file de la GUI (sti-gui-v<ver>.ps1).
-$asset = @($rel.assets | Where-Object { $_.name -like 'sti-gui-v*.ps1' }) | Select-Object -First 1
+# Asset preferido: el dist single-file de la GUI (fleet-gui-v<ver>.ps1).
+$asset = @($rel.assets | Where-Object { $_.name -like 'fleet-gui-v*.ps1' }) | Select-Object -First 1
 if (-not $asset) {
-  Write-Host "[FLEET] El release $($rel.tag_name) no publica el dist de la GUI (sti-gui-v*.ps1)." -ForegroundColor Red
+  Write-Host "[FLEET] El release $($rel.tag_name) no publica el dist de la GUI (fleet-gui-v*.ps1)." -ForegroundColor Red
   return
 }
 
 $destino = Join-Path $env:TEMP $asset.name
 Write-Paso "Descargando $($asset.name) ($([math]::Round($asset.size/1KB)) KB)..."
 try {
-  Invoke-WebRequest -Uri $asset.browser_download_url -OutFile $destino -Headers @{ 'User-Agent' = 'sti-mant-bootstrap' }
+  Invoke-WebRequest -Uri $asset.browser_download_url -OutFile $destino -Headers @{ 'User-Agent' = 'fleet-mant-bootstrap' }
 } catch {
   Write-Host "[FLEET] Fallo la descarga ($($_.Exception.Message))." -ForegroundColor Red
   return

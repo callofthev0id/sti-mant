@@ -1,5 +1,5 @@
-﻿# sti-gui.ps1 - GUI de relevamiento/mantenimiento (WPF). Capa de presentacion sobre el core.
-# Uso:  PowerShell -ExecutionPolicy Bypass -File sti-gui.ps1
+﻿# fleet-gui.ps1 - GUI de relevamiento/mantenimiento (WPF). Capa de presentacion sobre el core.
+# Uso:  PowerShell -ExecutionPolicy Bypass -File fleet-gui.ps1
 $scriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
 $coreDir = Join-Path $scriptDir '..'
 . "$coreDir\lib\common.ps1"

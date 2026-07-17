@@ -1,6 +1,6 @@
 # Fleet Maintenance Toolkit
 
-`PowerShell 5.1+` `WPF` `Pester 5`
+`Stack: PowerShell 5.1+, WPF, Pester 5.`
 
 A PowerShell toolkit for auditing and maintaining fleets of Windows machines during on-site or remote visits. It runs locally on the target machine, no internet connection or credentials required, and produces a maintenance checklist, a hardware/software inventory, and consolidated HTML/JSON reports.
 
@@ -29,7 +29,7 @@ Generates its own HTML and JSON.
 
 ## Graphical interface
 
-`sti-gui.ps1` is a WPF window with five tabs covering the full visit:
+`fleet-gui.ps1` is a WPF window with five tabs covering the full visit:
 
 - **Main:** identify the machine (client, tag, type) and trigger the audit run.
 - **Inventory:** hardware shown as cards (CPU, RAM, disks, OS, GPU, identifiers).
@@ -72,13 +72,13 @@ From the command line directly:
 
 ```powershell
 # Maintenance run (auto-detects terminal/server from the OS)
-PowerShell -ExecutionPolicy Bypass -File sti-mant.ps1 -Tag <name> [-Tipo terminales|servidores] [-Cliente "Name"] [-Usuario "user"] [-Nota "note"]
+PowerShell -ExecutionPolicy Bypass -File fleet-mant.ps1 -Tag <name> [-Tipo terminales|servidores] [-Cliente "Name"] [-Usuario "user"] [-Nota "note"]
 
 # Inventory
-PowerShell -ExecutionPolicy Bypass -File sti-mant.ps1 -Inventario [-Cliente "Name"]
+PowerShell -ExecutionPolicy Bypass -File fleet-mant.ps1 -Inventario [-Cliente "Name"]
 
 # Consolidated report from a folder of JSON files (defaults to C:\zback)
-PowerShell -ExecutionPolicy Bypass -File sti-informe.ps1 [-Carpeta <path>] [-Cliente "Name"] [-Periodo 2026-06]
+PowerShell -ExecutionPolicy Bypass -File fleet-informe.ps1 [-Carpeta <path>] [-Cliente "Name"] [-Periodo 2026-06]
 ```
 
 Options:
@@ -107,9 +107,9 @@ If Cobian Reflector or Cobian Backup is installed on the machine, the backup che
 
 ```
 sti-mant/
-  sti-gui.ps1         entry point: WPF graphical interface
-  sti-mant.ps1        entry point: maintenance + inventory + menu
-  sti-informe.ps1     entry point: consolidated report
+  fleet-gui.ps1       entry point: WPF graphical interface
+  fleet-mant.ps1      entry point: maintenance + inventory + menu
+  fleet-informe.ps1   entry point: consolidated report
   gui/                GUI logic
     lib/
       gui-logic.ps1         tab orchestration and state
@@ -141,7 +141,7 @@ sti-mant/
   package-release.py  builds the release zip
 ```
 
-The code lives modularly under `lib/`, `modules/` and `gui/`. The GUI (`sti-gui.ps1`) builds on `core.ps1`, which exposes the audit as reusable functions (`New-MantContext`, `Invoke-Relevamiento`) shared with the CLI. For distribution, `build.ps1` merges everything into a single `.ps1` per entry point (no loose file dependencies). Check modules run in parallel via a runspace pool.
+The code lives modularly under `lib/`, `modules/` and `gui/`. The GUI (`fleet-gui.ps1`) builds on `core.ps1`, which exposes the audit as reusable functions (`New-MantContext`, `Invoke-Relevamiento`) shared with the CLI. For distribution, `build.ps1` merges everything into a single `.ps1` per entry point (no loose file dependencies). Check modules run in parallel via a runspace pool.
 
 ## Utilities audit trail
 
@@ -163,7 +163,7 @@ Queryable and exportable, so it's possible to reconstruct what was changed on a 
 
 1. Create `lib/inv-<name>.ps1` with a `Get-Inv<Name>` function returning a hashtable.
 2. Call it from `New-InventarioModel` (in `lib/inventario.ps1`) and add the render for the section in `New-InventarioHtml`.
-3. Add the file to the `libOrder` list in `build.ps1` (and `build.py`) and to the dot-source list in `sti-mant.ps1`.
+3. Add the file to the `libOrder` list in `build.ps1` (and `build.py`) and to the dot-source list in `fleet-mant.ps1`.
 
 **If a new function is called from a module** (which runs in a parallel runspace), add it to the `$helpers` list in `lib/runspace.ps1`, or it won't be available inside the runspace.
 
@@ -172,7 +172,7 @@ Queryable and exportable, so it's possible to reconstruct what was changed on a 
 Code comments are in Spanish; the tool's intended technician audience is Spanish-speaking, same as the generated reports and `LEEME.txt`.
 
 ```powershell
-.\build.ps1 -Version <ver>     # generates dist/sti-*-v<ver>.ps1 (single-file, UTF-8 with BOM)
+.\build.ps1 -Version <ver>     # generates dist/fleet-*-v<ver>.ps1 (single-file, UTF-8 with BOM)
 Invoke-Pester tests            # Pester 5; tests the pure logic
 ```
 
@@ -187,7 +187,7 @@ Collectors (WMI, registry, SQLite) are validated on a real Windows machine, not 
 python3 package-release.py <ver>
 ```
 
-Produces `release/dist/fleet-maintenance-toolkit-v<ver>.zip` with the single-file builds (`sti-gui.ps1`, `sti-mant.ps1`, `sti-informe.ps1`), the `.bat` launchers, and the technician-facing `LEEME.txt` (in Spanish, since the toolkit's intended audience is Spanish-speaking).
+Produces `release/dist/fleet-maintenance-toolkit-v<ver>.zip` with the single-file builds (`fleet-gui.ps1`, `fleet-mant.ps1`, `fleet-informe.ps1`), the `.bat` launchers, and the technician-facing `LEEME.txt` (in Spanish, since the toolkit's intended audience is Spanish-speaking).
 
 ## Status
 

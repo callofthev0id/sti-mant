@@ -1,4 +1,4 @@
-﻿# sti-informe.ps1 - genera el informe consolidado (3 HTML) desde una carpeta de JSON de relevamiento.
+﻿# fleet-informe.ps1 - genera el informe consolidado (3 HTML) desde una carpeta de JSON de relevamiento.
 # Uso: ... -Carpeta <path> [-Cliente "X"] [-Periodo 2026-06] [-Salida <path>]
 # Salidas (en C:\zback): <host>_Informe_Mantenimiento_<Cliente>_<periodo>_{FULL,TERMINALES,SERVIDORES}.html
 [CmdletBinding()]

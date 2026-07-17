@@ -137,7 +137,7 @@ USO AVANZADO (linea de comandos)
 --------------------------------
 Relevamiento directo, sin menu:
 
-  powershell -ExecutionPolicy Bypass -File sti-mant.ps1 -Tag <nc> ^
+  powershell -ExecutionPolicy Bypass -File fleet-mant.ps1 -Tag <nc> ^
     [-Tipo terminales|servidores] [-Cliente "Nombre"] ^
     [-Usuario "usuario del equipo"] [-Nota "obs"] [-InstallOCS]
 
@@ -151,7 +151,7 @@ Relevamiento directo, sin menu:
 
 Informe desde una carpeta de JSON (por defecto C:\zback):
 
-  powershell -ExecutionPolicy Bypass -File sti-informe.ps1 ^
+  powershell -ExecutionPolicy Bypass -File fleet-informe.ps1 ^
     [-Carpeta "C:\ruta\a\los\json"] [-Cliente "Nombre"] ^
     [-Periodo 2026-06] [-Salida "C:\donde\guardar"]
 

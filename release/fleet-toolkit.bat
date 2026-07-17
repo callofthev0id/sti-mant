@@ -30,7 +30,7 @@ timeout /t 1 >nul
 goto menu
 
 :term
-powershell -NoProfile -ExecutionPolicy Bypass -File "%~dp0sti-mant.ps1" -Menu
+powershell -NoProfile -ExecutionPolicy Bypass -File "%~dp0fleet-mant.ps1" -Menu
 goto menu
 
 :srv
@@ -38,7 +38,7 @@ echo.
 set "tag="
 set /p "tag=TAG del cliente (nombre corto, = TAG de OCS): "
 if "%tag%"=="" ( echo   Sin TAG, vuelvo al menu. & timeout /t 1 >nul & goto menu )
-powershell -NoProfile -ExecutionPolicy Bypass -File "%~dp0sti-mant.ps1" -Tag "%tag%" -Tipo servidores
+powershell -NoProfile -ExecutionPolicy Bypass -File "%~dp0fleet-mant.ps1" -Tag "%tag%" -Tipo servidores
 echo.
 pause
 goto menu
@@ -46,9 +46,9 @@ goto menu
 :informe
 echo.
 echo   Lee los relevamientos de C:\zback (se crea sola si no existe).
-echo   (Para otra carpeta, usa sti-informe.bat con -Carpeta)
+echo   (Para otra carpeta, usa fleet-informe.bat con -Carpeta)
 echo.
-powershell -NoProfile -ExecutionPolicy Bypass -File "%~dp0sti-informe.ps1"
+powershell -NoProfile -ExecutionPolicy Bypass -File "%~dp0fleet-informe.ps1"
 echo.
 pause
 goto menu

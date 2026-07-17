@@ -860,7 +860,7 @@ function New-UtilPopover {
   $pop
 }
 
-# Config de la tab guardada en $Window.Tag['utilCfg'] por sti-gui.ps1: ScriptDir (raiz del script,
+# Config de la tab guardada en $Window.Tag['utilCfg'] por fleet-gui.ps1: ScriptDir (raiz del script,
 # para los runspaces de streaming) y OnRescan (scriptblock que re-escanea el estado tras una accion).
 # El bridge de click la lee de aca para no acoplar Update-UtilidadesPanel al wiring de la ventana.
 function Get-UtilCfg {
