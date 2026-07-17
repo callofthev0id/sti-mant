@@ -1,5 +1,5 @@
 ﻿# mod-sistema.ps1 - visor de eventos (semi), último reinicio, VSS, inicio (semi), software terceros (semi).
-function Invoke-STIModSistema {
+function Invoke-ModSistema {
   param($Ctx)
   $items = @(); $errs = @()
 

@@ -3,14 +3,14 @@
 
 # ---- Manifiesto de checks (orden = planilla-builder/src/column-spec.mjs). El TSV emite en este orden. ----
 $script:CHK_ORDER_TERM = @(
-  'chk_cuentas_sti','chk_firewall','chk_antivirus_eset','chk_updates','chk_reinicio_pendiente',
+  'chk_cuentas_admin','chk_firewall','chk_antivirus_eset','chk_updates','chk_reinicio_pendiente',
   'chk_visor_eventos','chk_ultimo_reinicio','chk_restaurar_vss','chk_inicio_no_deseado','chk_software_terceros',
   'chk_disco_smart','chk_espacio_disco','chk_ram','chk_hardware_visual','chk_perifericos','chk_ups','chk_bateria',
   'chk_conectividad','chk_teamviewer','chk_recursos_compartidos','chk_rdp','chk_wifi',
   'chk_ocs','chk_backup_cobian','chk_cloud_sync','chk_limpieza_temp'
 )
 $script:CHK_ORDER_SRV = @(
-  'srv_cuentas_sti','srv_firewall','srv_antivirus_eset','srv_updates','srv_rdp',
+  'srv_cuentas_admin','srv_firewall','srv_antivirus_eset','srv_updates','srv_rdp',
   'srv_visor_eventos','srv_ultimo_reinicio','srv_vss','srv_disco_smart','srv_espacio_disco','srv_backup',
   'srv_ocs','srv_teamviewer','srv_encendido_auto','srv_apagado_auto','srv_servicios_rol','srv_vms',
   'srv_conectividad','srv_recursos_compartidos'
@@ -19,14 +19,14 @@ $script:SEM = @('Ok','Advertencia','Error','Crítico','N/A')
 $script:SCRIPT_VERSION = '1.1.1'
 # Cuentas admin estándar que se esperan en cada equipo gestionado.
 # No se hardcodean nombres en el repo público: se leen de entorno o de un archivo
-# local no versionado (sti-cuentas.local, una cuenta por línea). Si no hay fuente,
+# local no versionado (cuentas-admin.local, una cuenta por línea). Si no hay fuente,
 # la lista queda vacía y el check de cuentas admin degrada (no expone usernames internos).
 function Get-CuentasAdmin {
-  param([string]$LocalFile = (Join-Path $PSScriptRoot 'sti-cuentas.local'))
+  param([string]$LocalFile = (Join-Path $PSScriptRoot 'cuentas-admin.local'))
   $cuentas = @()
-  # 1) Variable de entorno STI_CUENTAS_ADMIN: separadas por coma o punto y coma.
-  if ($env:STI_CUENTAS_ADMIN) {
-    $cuentas = @($env:STI_CUENTAS_ADMIN -split '[,;]' | ForEach-Object { $_.Trim() } | Where-Object { $_ })
+  # 1) Variable de entorno FLEET_CUENTAS_ADMIN: separadas por coma o punto y coma.
+  if ($env:FLEET_CUENTAS_ADMIN) {
+    $cuentas = @($env:FLEET_CUENTAS_ADMIN -split '[,;]' | ForEach-Object { $_.Trim() } | Where-Object { $_ })
   }
   # 2) Archivo local opcional (gitignored): una cuenta por línea, '#' = comentario.
   if (-not $cuentas -and $LocalFile -and (Test-Path -LiteralPath $LocalFile)) {
@@ -38,7 +38,7 @@ function Get-CuentasAdmin {
   }
   @($cuentas)
 }
-$script:STI_CUENTAS_ADMIN = Get-CuentasAdmin
+$script:FLEET_CUENTAS_ADMIN = Get-CuentasAdmin
 
 # ---- PURAS ----
 

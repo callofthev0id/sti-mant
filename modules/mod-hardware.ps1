@@ -1,5 +1,5 @@
 ﻿# mod-hardware.ps1 - disco SMART, espacio C:, RAM, batería (laptop), periféricos (manual), UPS (semi).
-function Invoke-STIModHardware {
+function Invoke-ModHardware {
   param($Ctx)
   $items = @(); $errs = @()
   $isLaptop = ($Ctx.formFactor -eq 'laptop')

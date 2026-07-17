@@ -7,7 +7,7 @@
 # (CHK_ORDER_TERM 26, CHK_ORDER_SRV 19). No se lee el .mjs en runtime: no hay Node garantizado en
 # la maquina del tecnico. El test de conteo (26/19) detecta drift si cambia el spec.
 $script:CHK_ORDER_TERM = @(
-  @{ key='chk_cuentas_sti';          label='Cuentas STI (admin)' }
+  @{ key='chk_cuentas_admin';          label='Cuentas admin (gestionadas)' }
   @{ key='chk_firewall';             label='Firewall' }
   @{ key='chk_antivirus_eset';       label='Antivirus ESET' }
   @{ key='chk_updates';              label='Updates Windows' }
@@ -25,7 +25,7 @@ $script:CHK_ORDER_TERM = @(
   @{ key='chk_ups';                  label='UPS' }
   @{ key='chk_bateria';              label='Batería (laptop)' }
   @{ key='chk_conectividad';         label='Conectividad (gateway+DNS)' }
-  @{ key='chk_teamviewer';           label='TeamViewer Host STI' }
+  @{ key='chk_teamviewer';           label='TeamViewer Host' }
   @{ key='chk_recursos_compartidos'; label='Recursos compartidos' }
   @{ key='chk_rdp';                  label='Configuración RDP' }
   @{ key='chk_wifi';                 label='Adaptador WiFi (laptop)' }
@@ -35,7 +35,7 @@ $script:CHK_ORDER_TERM = @(
   @{ key='chk_limpieza_temp';        label='Limpieza temporales' }
 )
 $script:CHK_ORDER_SRV = @(
-  @{ key='srv_cuentas_sti';          label='Cuentas STI (admin)' }
+  @{ key='srv_cuentas_admin';          label='Cuentas admin (gestionadas)' }
   @{ key='srv_firewall';             label='Firewall' }
   @{ key='srv_antivirus_eset';       label='Antivirus ESET' }
   @{ key='srv_updates';              label='Updates Windows Server' }
@@ -47,7 +47,7 @@ $script:CHK_ORDER_SRV = @(
   @{ key='srv_espacio_disco';        label='Espacio en disco' }
   @{ key='srv_backup';               label='Backup (Acronis/Cobian)' }
   @{ key='srv_ocs';                  label='OCS Agent + inventario' }
-  @{ key='srv_teamviewer';           label='TeamViewer Host STI' }
+  @{ key='srv_teamviewer';           label='TeamViewer Host' }
   @{ key='srv_encendido_auto';       label='Encendido automático' }
   @{ key='srv_apagado_auto';         label='Apagado automático' }
   @{ key='srv_servicios_rol';        label='Servicios por rol' }
@@ -179,19 +179,19 @@ function Get-GenerarSemColor {
   param([string]$Estado)
   if (Get-Command Get-SemColor -ErrorAction SilentlyContinue) { return (Get-SemColor $Estado) }
   switch ($Estado) {
-    'Ok'          { '#43C961' }
-    'Advertencia' { '#F2C03D' }
-    'Error'       { '#E07820' }
-    'Crítico'     { '#F05754' }
-    default       { '#6a8a7b' }
+    'Ok'          { '#5EAE87' }
+    'Advertencia' { '#D7A858' }
+    'Error'       { '#C77539' }
+    'Crítico'     { '#DA6A72' }
+    default       { '#71837A' }
   }
 }
 
-# Color de texto legible sobre el color de estado. El ambar (#F2C03D) lleva texto oscuro;
+# Color de texto legible sobre el color de estado. El ambar (#D7A858) lleva texto oscuro;
 # el resto (verde/naranja/rojo/gris) lleva texto blanco. Asi la etiqueta se lee siempre.
 function Get-GenerarSemTextColor {
   param([string]$Estado)
-  if ($Estado -eq 'Advertencia') { return '#3a2c00' }
+  if ($Estado -eq 'Advertencia') { return '#312209' }
   '#ffffff'
 }
 
@@ -340,25 +340,25 @@ function Get-GenerarHtmlHead {
 "@
 }
 
-# Logo isologo STI inline (monitor + check, paths canonicos de la guia interna de marca). $H = alto en px.
+# Icono circulo + check, generico (sin logo de marca). $H = alto en px.
 # Sobre fondo oscuro: stroke verde. Es el mismo SVG que usan los demas informes.
 function Get-GenerarLogoSvg {
   param([int]$H = 34)
   @"
 <svg width='$H' height='$H' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'>
-<path d='M14 20 H86 A6 6 0 0 1 92 26 V64 A6 6 0 0 1 86 70 H14 A6 6 0 0 1 8 64 V26 A6 6 0 0 1 14 20Z M42 82 H58 M50 70 V82' fill='none' stroke='#43C961' stroke-width='6' stroke-linejoin='round'/>
-<path d='M28 46 L44 62 L74 30' fill='none' stroke='#43C961' stroke-width='6' stroke-linecap='round' stroke-linejoin='round'/>
+<path d='M50 12 A38 38 0 1 1 49.9 12 Z' fill='none' stroke='#5EAE87' stroke-width='6'/>
+<path d='M30 52 L45 67 L72 34' fill='none' stroke='#5EAE87' stroke-width='7' stroke-linecap='round' stroke-linejoin='round'/>
 </svg>
 "@
 }
 
-# Banner STI superior (logo + STI MANTENIMIENTO + subtitulo de la pieza). Consistente en las 3 salidas.
+# Banner superior (icono + wordmark FLEET TOOLKIT + subtitulo de la pieza). Consistente en las 3 salidas.
 function Get-GenerarBanner {
   param([string]$Subtitulo)
   $svg = Get-GenerarLogoSvg -H 38
   @"
 <div class='banner'>
-  <div class='banner-logo'>$svg<div class='wordmark'><span class='wm-a'>STI</span><span class='wm-b'>MANTENIMIENTO</span></div></div>
+  <div class='banner-logo'>$svg<div class='wordmark'><span class='wm-a'>FLEET</span><span class='wm-b'>TOOLKIT</span></div></div>
   <div class='banner-sub'>$Subtitulo</div>
 </div>
 "@
@@ -368,35 +368,35 @@ function Get-GenerarBanner {
 # Tamanos pensados para impresion (legibles, no diminutos). Print-first.
 function Get-GenerarBaseCss {
   @"
- :root{--verde:#43C961;--verde-med:#2B9C70;--verde-deep:#053028;--negro:#111111;--rojo:#F05754;--naranja:#E07820;--amarillo:#F2C03D;--gris:#717171;--borde:#c9d6ce;
+ :root{--verde:#5EAE87;--verde-med:#428564;--verde-deep:#0E271B;--negro:#111111;--rojo:#DA6A72;--naranja:#C77539;--amarillo:#D7A858;--gris:#717171;--borde:#c9d6ce;
    --font-main:'Space Grotesk','Helvetica Neue',Arial,sans-serif;--font-mono:'DM Mono',Consolas,monospace;}
  *,*::before,*::after{box-sizing:border-box;}
- body{font-family:var(--font-main);color:#16261e;margin:0;background:#fff;}
+ body{font-family:var(--font-main);color:#19231E;margin:0;background:#fff;}
  .banner{background:var(--verde-deep);color:#fff;padding:14px 22px;border-bottom:4px solid var(--verde);display:flex;align-items:center;justify-content:space-between;}
  .banner-logo{display:flex;align-items:center;gap:13px;}
  .wordmark{display:flex;flex-direction:column;line-height:.9;}
  .wm-a{font-family:'Audiowide',sans-serif;font-size:22px;color:#fff;letter-spacing:1px;}
  .wm-b{font-family:'Audiowide',sans-serif;font-size:10px;color:var(--verde);letter-spacing:.42em;margin-top:3px;}
- .banner-sub{font-size:12px;color:#9fdcc0;text-transform:uppercase;letter-spacing:.16em;font-weight:600;}
- .hdr{display:flex;flex-wrap:wrap;gap:10px 30px;padding:14px 22px;background:#f1f6f3;border-bottom:1px solid var(--borde);font-size:14px;}
+ .banner-sub{font-size:12px;color:#ABD0BE;text-transform:uppercase;letter-spacing:.16em;font-weight:600;}
+ .hdr{display:flex;flex-wrap:wrap;gap:10px 30px;padding:14px 22px;background:#F2F5F4;border-bottom:1px solid var(--borde);font-size:14px;}
  .hdr .f{display:flex;align-items:baseline;gap:7px;}
  .hdr b{color:var(--verde-deep);font-weight:700;text-transform:uppercase;font-size:11px;letter-spacing:.06em;}
- .hdr .v{font-weight:600;color:#16261e;}
- .hdr .edit{border-bottom:1.5px dashed var(--verde-med);min-width:140px;padding:1px 4px;background:rgba(67,201,97,.06);border-radius:3px;outline:none;}
+ .hdr .v{font-weight:600;color:#19231E;}
+ .hdr .edit{border-bottom:1.5px dashed var(--verde-med);min-width:140px;padding:1px 4px;background:rgba(94,174,135,.06);border-radius:3px;outline:none;}
  .firmas{display:flex;gap:50px;margin:34px 22px 18px;page-break-inside:avoid;}
  .firma-box{flex:1;}
- .firma-line{border-bottom:1.5px solid #16261e;height:46px;}
+ .firma-line{border-bottom:1.5px solid #19231E;height:46px;}
  .firma-lbl{margin-top:7px;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--verde-deep);}
  .firma-sub{font-size:10px;color:var(--gris);}
  .doc{display:flex;flex-direction:column;min-height:100vh;}
  .doc-body{flex:1 0 auto;}
- .footer{flex-shrink:0;margin-top:auto;padding:11px 22px;border-top:1px solid var(--borde);background:#f1f6f3;font-size:10px;color:var(--gris);display:flex;justify-content:space-between;gap:18px;}
+ .footer{flex-shrink:0;margin-top:auto;padding:11px 22px;border-top:1px solid var(--borde);background:#F2F5F4;font-size:10px;color:var(--gris);display:flex;justify-content:space-between;gap:18px;}
  .footer b{color:var(--verde-deep);}
  @media print{.footer{position:fixed;bottom:0;left:0;right:0;background:#fff;}}
 "@
 }
 
-# Planilla print-first: banner STI + header una vez (con tecnico editable) + grilla equipos x checks
+# Planilla print-first: banner + header una vez (con tecnico editable) + grilla equipos x checks
 # (estado semaforo). Una grilla por tipo (en both, dos tablas). Orden de columnas = Get-ChkOrder.
 # Terminales: 2 firmas al final, fila por equipo coloreada por fisico/VM, A4 landscape.
 # Servidores: SIN firmas, A4 portrait. Columnas Obs/Detalle editables (contenteditable).
@@ -478,7 +478,7 @@ function New-PlanillaHtml {
   if ($conFirmas) {
     $firmas = @"
 <div class='firmas'>
-  <div class='firma-box'><div class='firma-line'></div><div class='firma-lbl'>Técnico</div><div class='firma-sub'>STI Mantenimiento · firma y aclaración</div></div>
+  <div class='firma-box'><div class='firma-line'></div><div class='firma-lbl'>Técnico</div><div class='firma-sub'>Fleet Maintenance Toolkit · firma y aclaración</div></div>
   <div class='firma-box'><div class='firma-line'></div><div class='firma-lbl'>Referente</div><div class='firma-sub'>Cliente · firma y aclaración</div></div>
 </div>
 "@
@@ -501,18 +501,18 @@ $base
  th.usr{width:96px;text-align:left;vertical-align:middle;padding:6px 8px;font-size:12px;}
  th.obs{width:110px;vertical-align:middle;}
  td.eq{text-align:left;font-weight:700;padding:6px 8px;font-size:11.5px;}
- td.usr{text-align:left;padding:6px 8px;font-size:11px;color:#16261e;}
+ td.usr{text-align:left;padding:6px 8px;font-size:11px;color:#19231E;}
  td.st{height:24px;padding:2px 1px;text-align:center;font-size:9.5px;font-weight:700;line-height:1.05;}
- td.st.na{background:#eef1ef;color:var(--gris);font-weight:600;}
+ td.st.na{background:#EFF0F0;color:var(--gris);font-weight:600;}
  td.obs{background:rgba(67,201,97,.05);outline:none;}
- tr.fisico td.eq,tr.fisico td.usr{background:#e4f6ea;}
+ tr.fisico td.eq,tr.fisico td.usr{background:#E8F2ED;}
  tr.vm td.eq,tr.vm td.usr{background:#e0edfb;}
  .srv-blocks{display:flex;flex-direction:column;gap:14px;margin-top:6px;}
  .srv-card{page-break-inside:avoid;border:1px solid var(--borde);border-radius:8px;overflow:hidden;}
  .srv-card.fisico{border-left:5px solid var(--verde);}
  .srv-card.vm{border-left:5px solid #2f6bbf;}
  .srv-hdr{padding:10px 13px;display:flex;align-items:center;justify-content:center;gap:9px;border-bottom:1px solid var(--borde);}
- .srv-card.fisico .srv-hdr{background:#dff3e6;}
+ .srv-card.fisico .srv-hdr{background:#E3EFE9;}
  .srv-card.vm .srv-hdr{background:#dce9fb;}
  .srv-host{font-size:15px;font-weight:700;color:var(--verde-deep);letter-spacing:.02em;}
  table.srv-grid{border-collapse:collapse;width:100%;table-layout:fixed;font-size:12px;}
@@ -541,7 +541,7 @@ $tablas
 $firmas
 </div>
 </div>
-<div class='footer'><span><b>STI Mantenimiento</b> &nbsp;·&nbsp; Soluciones IT de confianza</span><span>Las columnas Obs. y el campo Técnico son editables en pantalla antes de imprimir.</span></div>
+<div class='footer'><span><b>Fleet Maintenance Toolkit</b></span><span>Las columnas Obs. y el campo Técnico son editables en pantalla antes de imprimir.</span></div>
 </div>
 </body></html>
 "@
@@ -635,20 +635,20 @@ function New-InformeLocalHtml {
 $head<style>
  @page{size:A4 portrait;margin:11mm;}
 $base
- .meta{padding:13px 22px;background:#f1f6f3;border-bottom:1px solid var(--borde);font-size:14px;display:flex;flex-wrap:wrap;gap:8px 28px;}
+ .meta{padding:13px 22px;background:#F2F5F4;border-bottom:1px solid var(--borde);font-size:14px;display:flex;flex-wrap:wrap;gap:8px 28px;}
  .meta .f{display:flex;align-items:baseline;gap:7px;}
  .meta b{color:var(--verde-deep);font-weight:700;text-transform:uppercase;font-size:11px;letter-spacing:.06em;}
  .meta .v{font-weight:600;}
  .resumen{margin:18px 22px 6px;page-break-inside:avoid;}
  .resumen h2{font-size:15px;color:var(--verde-deep);margin:0 0 11px;text-transform:uppercase;letter-spacing:.05em;border-left:4px solid var(--verde);padding-left:9px;}
  .res-top{display:flex;flex-wrap:wrap;gap:12px;margin-bottom:12px;}
- .stat{flex:1;min-width:120px;border:1px solid var(--borde);border-radius:9px;padding:11px 14px;background:#f7faf8;}
+ .stat{flex:1;min-width:120px;border:1px solid var(--borde);border-radius:9px;padding:11px 14px;background:#F8F9F9;}
  .stat .sn{font-size:26px;font-weight:800;color:var(--verde-deep);line-height:1;}
  .stat .sl{font-size:11px;color:var(--gris);text-transform:uppercase;letter-spacing:.06em;margin-top:5px;font-weight:600;}
  .stat.warn .sn{color:var(--naranja);}
  .kpis{display:flex;gap:8px;flex-wrap:wrap;}
  .kpi{flex:1;min-width:78px;border-radius:8px;padding:9px 6px;text-align:center;}
- .kpi-na{background:#eef1ef;color:var(--gris);}
+ .kpi-na{background:#EFF0F0;color:var(--gris);}
  .kpi-n{font-size:22px;font-weight:800;line-height:1;}
  .kpi-l{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;margin-top:4px;}
  section{margin:16px 22px;page-break-inside:avoid;}
@@ -670,8 +670,8 @@ $base
  td{border:1px solid var(--borde);padding:7px 10px;vertical-align:top;}
  td.item{font-weight:600;}
  td.st{font-weight:700;text-align:center;white-space:nowrap;}
- td.st.na{background:#eef1ef;color:var(--gris);font-weight:600;}
- td.det{color:#2a3a33;}
+ td.st.na{background:#EFF0F0;color:var(--gris);font-weight:600;}
+ td.det{color:#2D3732;}
  .ok-chips{display:flex;flex-wrap:wrap;gap:6px;}
  .ok-chip{font-size:11px;font-weight:600;color:var(--verde-med);background:rgba(67,201,97,.12);border:1px solid rgba(67,201,97,.3);padding:3px 9px;border-radius:9px;}
  .vacio{color:var(--gris);font-size:13px;}
@@ -697,7 +697,7 @@ $banner
 $secs
 $limpiosBlock
 </div>
-<div class='footer'><span><b>STI Mantenimiento</b> &nbsp;·&nbsp; Informe local de hallazgos (no es el informe oficial mensual del cliente).</span><span>Resumen deterministico del relevamiento. Por equipo se listan solo los checks fuera de Ok.</span></div>
+<div class='footer'><span><b>Fleet Maintenance Toolkit</b> &nbsp;·&nbsp; Informe local de hallazgos (no es el informe oficial mensual del cliente).</span><span>Resumen deterministico del relevamiento. Por equipo se listan solo los checks fuera de Ok.</span></div>
 </div>
 </body></html>
 "@
@@ -713,17 +713,17 @@ function Save-GenerarHtml {
 }
 
 # XAML del panel Generar (reemplaza el placeholder en gui-xaml.ps1). Solo brushes/estilos de
-# New-StiTheme. Los chips de equipo del bloque .detected se pueblan en runtime (Update-GenerarPanel).
+# New-AppTheme. Los chips de equipo del bloque .detected se pueblan en runtime (Update-GenerarPanel).
 function New-PanelGenerarXaml {
   @'
 <ScrollViewer x:Name="PanelGenerar" Visibility="Collapsed" VerticalScrollBarVisibility="Auto">
   <StackPanel>
-    <TextBlock Style="{StaticResource StiSecHeader}" Text="PASO FINAL · CONSOLIDAR RELEVAMIENTO"/>
-    <TextBlock Foreground="{StaticResource StiTexto2}" FontSize="11.5" TextWrapping="Wrap" Margin="0,0,0,4"
+    <TextBlock Style="{StaticResource AppSecHeader}" Text="PASO FINAL · CONSOLIDAR RELEVAMIENTO"/>
+    <TextBlock Foreground="{StaticResource AppTexto2}" FontSize="11.5" TextWrapping="Wrap" Margin="0,0,0,4"
                Text="Apuntá a la carpeta con los JSON de todos los equipos. Reviso qué hay (terminales y servidores) y genero la planilla y el informe local del período."/>
 
     <Border Margin="0,8,0,0" Padding="13,11" CornerRadius="9"
-            Background="{StaticResource StiCard}" BorderBrush="{StaticResource StiBorde}" BorderThickness="1">
+            Background="{StaticResource AppCard}" BorderBrush="{StaticResource AppBorde}" BorderThickness="1">
       <Grid>
         <Grid.ColumnDefinitions>
           <ColumnDefinition Width="*"/>
@@ -737,85 +737,85 @@ function New-PanelGenerarXaml {
         </Grid.RowDefinitions>
 
         <StackPanel Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3">
-          <TextBlock Style="{StaticResource StiLabel}" Text="CARPETA DE JSONS"/>
+          <TextBlock Style="{StaticResource AppLabel}" Text="CARPETA DE JSONS"/>
           <StackPanel Orientation="Horizontal">
-            <TextBox x:Name="TxtGenCarpeta" Style="{StaticResource StiInputMono}" Width="380"/>
+            <TextBox x:Name="TxtGenCarpeta" Style="{StaticResource AppInputMono}" Width="380"/>
             <Button x:Name="BtnGenExaminar" Content="Examinar…" Margin="6,0,0,0" Padding="11,4"/>
           </StackPanel>
         </StackPanel>
 
         <StackPanel Grid.Row="2" Grid.Column="0">
-          <TextBlock Style="{StaticResource StiLabel}" Text="EMPRESA / CLIENTE"/>
-          <TextBox x:Name="TxtGenCliente" Style="{StaticResource StiInputBox}"/>
+          <TextBlock Style="{StaticResource AppLabel}" Text="EMPRESA / CLIENTE"/>
+          <TextBox x:Name="TxtGenCliente" Style="{StaticResource AppInputBox}"/>
         </StackPanel>
         <StackPanel Grid.Row="2" Grid.Column="2">
-          <TextBlock Style="{StaticResource StiLabel}" Text="PERÍODO"/>
-          <TextBox x:Name="TxtGenPeriodo" Style="{StaticResource StiInputBox}"/>
+          <TextBlock Style="{StaticResource AppLabel}" Text="PERÍODO"/>
+          <TextBox x:Name="TxtGenPeriodo" Style="{StaticResource AppInputBox}"/>
         </StackPanel>
       </Grid>
     </Border>
 
     <StackPanel Orientation="Horizontal" Margin="2,12,0,6">
-      <TextBlock Style="{StaticResource StiLabel}" VerticalAlignment="Center" Margin="0,0,10,0" Text="ALCANCE"/>
-      <RadioButton x:Name="ChipGenTerm"  Style="{StaticResource StiChip}" Content="Terminales" IsChecked="True" GroupName="gentipo"/>
-      <RadioButton x:Name="ChipGenSrv"   Style="{StaticResource StiChip}" Content="Servidores" GroupName="gentipo"/>
-      <RadioButton x:Name="ChipGenBoth"  Style="{StaticResource StiChip}" Content="Ambos" GroupName="gentipo"/>
+      <TextBlock Style="{StaticResource AppLabel}" VerticalAlignment="Center" Margin="0,0,10,0" Text="ALCANCE"/>
+      <RadioButton x:Name="ChipGenTerm"  Style="{StaticResource AppChip}" Content="Terminales" IsChecked="True" GroupName="gentipo"/>
+      <RadioButton x:Name="ChipGenSrv"   Style="{StaticResource AppChip}" Content="Servidores" GroupName="gentipo"/>
+      <RadioButton x:Name="ChipGenBoth"  Style="{StaticResource AppChip}" Content="Ambos" GroupName="gentipo"/>
     </StackPanel>
 
     <Border Padding="0" CornerRadius="9" ClipToBounds="True"
-            Background="{StaticResource StiCard}" BorderBrush="{StaticResource StiBorde}" BorderThickness="1">
+            Background="{StaticResource AppCard}" BorderBrush="{StaticResource AppBorde}" BorderThickness="1">
       <StackPanel>
-        <Border Background="{StaticResource StiChipBar}" Padding="13,10" BorderBrush="{StaticResource StiBordeSutil}" BorderThickness="0,0,0,1">
+        <Border Background="{StaticResource AppChipBar}" Padding="13,10" BorderBrush="{StaticResource AppBordeSutil}" BorderThickness="0,0,0,1">
           <StackPanel Orientation="Horizontal">
             <Path Width="17" Height="17" Stretch="Uniform" VerticalAlignment="Center" Margin="0,0,9,0"
-                  Stroke="{StaticResource StiVerde}" StrokeThickness="1.8" Fill="Transparent"
+                  Stroke="{StaticResource AppAccent}" StrokeThickness="1.8" Fill="Transparent"
                   Data="M3 7 A2 2 0 0 1 5 5 L9 5 L11 7 L19 7 A2 2 0 0 1 21 9 L21 17 A2 2 0 0 1 19 19 L5 19 A2 2 0 0 1 3 17 Z"/>
-            <TextBlock x:Name="TxtGenConteo" Foreground="{StaticResource StiTexto}" FontWeight="700" FontSize="13" VerticalAlignment="Center" Text="0 JSONs"/>
-            <TextBlock Foreground="{StaticResource StiTexto2}" FontSize="12" VerticalAlignment="Center" Margin="6,0,0,0" Text="que voy a consolidar"/>
-            <TextBlock x:Name="TxtGenPill" Foreground="{StaticResource StiVerdeClaro}" FontFamily="DM Mono, Consolas" FontSize="10.5" VerticalAlignment="Center" Margin="14,0,0,0" Text=""/>
+            <TextBlock x:Name="TxtGenConteo" Foreground="{StaticResource AppTexto}" FontWeight="700" FontSize="13" VerticalAlignment="Center" Text="0 JSONs"/>
+            <TextBlock Foreground="{StaticResource AppTexto2}" FontSize="12" VerticalAlignment="Center" Margin="6,0,0,0" Text="que voy a consolidar"/>
+            <TextBlock x:Name="TxtGenPill" Foreground="{StaticResource AppAccentClaro}" FontFamily="DM Mono, Consolas" FontSize="10.5" VerticalAlignment="Center" Margin="14,0,0,0" Text=""/>
           </StackPanel>
         </Border>
         <StackPanel Margin="13,11,13,12">
           <WrapPanel x:Name="PanelGenEquipos"/>
-          <TextBlock x:Name="TxtGenVacio" Foreground="{StaticResource StiTexto3}" FontSize="11.5" Text="Elegí una carpeta para ver los equipos detectados."/>
-          <TextBlock x:Name="TxtGenInvalidos" Foreground="{StaticResource StiNaranja}" FontFamily="DM Mono, Consolas" FontSize="10" Margin="0,8,0,0" TextWrapping="Wrap" Visibility="Collapsed"/>
+          <TextBlock x:Name="TxtGenVacio" Foreground="{StaticResource AppTexto3}" FontSize="11.5" Text="Elegí una carpeta para ver los equipos detectados."/>
+          <TextBlock x:Name="TxtGenInvalidos" Foreground="{StaticResource AppNaranja}" FontFamily="DM Mono, Consolas" FontSize="10" Margin="0,8,0,0" TextWrapping="Wrap" Visibility="Collapsed"/>
         </StackPanel>
       </StackPanel>
     </Border>
 
-    <TextBlock Style="{StaticResource StiSecHeader}" Text="GENERAR SALIDAS"/>
+    <TextBlock Style="{StaticResource AppSecHeader}" Text="GENERAR SALIDAS"/>
     <UniformGrid Columns="2">
       <Border Margin="0,0,6,0" Padding="15" CornerRadius="9"
-              Background="{StaticResource StiCard}" BorderBrush="{StaticResource StiBorde}" BorderThickness="1">
+              Background="{StaticResource AppCard}" BorderBrush="{StaticResource AppBorde}" BorderThickness="1">
         <StackPanel>
           <StackPanel Orientation="Horizontal" Margin="0,0,0,7">
             <Border Width="30" Height="30" CornerRadius="7" Margin="0,0,9,0"
-                    Background="{StaticResource StiInput}" BorderBrush="{StaticResource StiBorde}" BorderThickness="1">
-              <Path Width="16" Height="16" Stretch="Uniform" Stroke="{StaticResource StiVerde}" StrokeThickness="1.8" Fill="Transparent"
+                    Background="{StaticResource AppInput}" BorderBrush="{StaticResource AppBorde}" BorderThickness="1">
+              <Path Width="16" Height="16" Stretch="Uniform" Stroke="{StaticResource AppAccent}" StrokeThickness="1.8" Fill="Transparent"
                     Data="M3 3 L21 3 L21 21 L3 21 Z M3 9 L21 9 M9 3 L9 21"/>
             </Border>
             <TextBlock Foreground="White" FontWeight="700" FontSize="13.5" VerticalAlignment="Center" Text="Planilla de mantenimiento"/>
           </StackPanel>
-          <TextBlock Foreground="{StaticResource StiTexto2}" FontSize="11" TextWrapping="Wrap" Margin="0,0,0,11"
+          <TextBlock Foreground="{StaticResource AppTexto2}" FontSize="11" TextWrapping="Wrap" Margin="0,0,0,11"
                      Text="Grilla de equipos por checks, formato print-first para imprimir y firmar. Misma estructura que la planilla manual."/>
-          <Button x:Name="BtnGenPlanilla" Style="{StaticResource StiBtnPrimary}" Content="Generar planilla"/>
+          <Button x:Name="BtnGenPlanilla" Style="{StaticResource AppBtnPrimary}" Content="Generar planilla"/>
         </StackPanel>
       </Border>
       <Border Margin="6,0,0,0" Padding="15" CornerRadius="9"
-              Background="{StaticResource StiCard}" BorderBrush="{StaticResource StiBorde}" BorderThickness="1">
+              Background="{StaticResource AppCard}" BorderBrush="{StaticResource AppBorde}" BorderThickness="1">
         <StackPanel>
           <StackPanel Orientation="Horizontal" Margin="0,0,0,7">
             <Border Width="30" Height="30" CornerRadius="7" Margin="0,0,9,0"
-                    Background="{StaticResource StiInput}" BorderBrush="{StaticResource StiBorde}" BorderThickness="1">
-              <Path Width="16" Height="16" Stretch="Uniform" Stroke="{StaticResource StiVerdeClaro}" StrokeThickness="1.8" Fill="Transparent"
+                    Background="{StaticResource AppInput}" BorderBrush="{StaticResource AppBorde}" BorderThickness="1">
+              <Path Width="16" Height="16" Stretch="Uniform" Stroke="{StaticResource AppAccentClaro}" StrokeThickness="1.8" Fill="Transparent"
                     Data="M5 3 L19 3 L19 21 L5 21 Z M9 8 L15 8 M9 12 L15 12 M9 16 L13 16"/>
             </Border>
             <TextBlock Foreground="White" FontWeight="700" FontSize="13.5" VerticalAlignment="Center" Text="Informe local"/>
           </StackPanel>
-          <TextBlock Foreground="{StaticResource StiTexto2}" FontSize="11" TextWrapping="Wrap" Margin="0,0,0,11"
+          <TextBlock Foreground="{StaticResource AppTexto2}" FontSize="11" TextWrapping="Wrap" Margin="0,0,0,11"
                      Text="HTML consolidado de hallazgos del relevamiento. No es el informe oficial mensual del cliente."/>
           <Button x:Name="BtnGenInforme" Content="Generar informe" Padding="10,8" BorderThickness="1"
-                  Background="{StaticResource StiCard}" BorderBrush="{StaticResource StiVerde}" Foreground="{StaticResource StiVerdeClaro}" FontWeight="700"/>
+                  Background="{StaticResource AppCard}" BorderBrush="{StaticResource AppAccent}" Foreground="{StaticResource AppAccentClaro}" FontWeight="700"/>
         </StackPanel>
       </Border>
     </UniformGrid>
@@ -846,10 +846,10 @@ function Update-GenerarPanel {
       $b.BorderBrush = New-Object System.Windows.Media.SolidColorBrush ([System.Windows.Media.ColorConverter]::ConvertFromString('#3a5a8a'))
       $fg = [System.Windows.Media.ColorConverter]::ConvertFromString('#a9c8ee')
     } else {
-      $b.BorderBrush = New-Object System.Windows.Media.SolidColorBrush ([System.Windows.Media.ColorConverter]::ConvertFromString('#2c5240'))
-      $fg = [System.Windows.Media.ColorConverter]::ConvertFromString('#cfe3d8')
+      $b.BorderBrush = New-Object System.Windows.Media.SolidColorBrush ([System.Windows.Media.ColorConverter]::ConvertFromString('#344A3F'))
+      $fg = [System.Windows.Media.ColorConverter]::ConvertFromString('#D3DFD9')
     }
-    $b.Background = New-Object System.Windows.Media.SolidColorBrush ([System.Windows.Media.ColorConverter]::ConvertFromString('#16291f'))
+    $b.Background = New-Object System.Windows.Media.SolidColorBrush ([System.Windows.Media.ColorConverter]::ConvertFromString('#1A2520'))
     $tb = New-Object System.Windows.Controls.TextBlock
     $tb.Text = [string]$eq.hostname
     $tb.FontFamily = New-Object System.Windows.Media.FontFamily('DM Mono, Consolas')

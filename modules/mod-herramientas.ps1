@@ -1,5 +1,5 @@
 ﻿# mod-herramientas.ps1 - OCS (check-first, install opcional), Cobian (semi), cloud sync, limpieza temp.
-function Invoke-STIModHerramientas {
+function Invoke-ModHerramientas {
   param($Ctx)
   $items = @(); $errs = @()
 

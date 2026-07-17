@@ -117,7 +117,7 @@ function Show-HardwareIds {
 function Invoke-OneShot {
   param([string]$Tag, [string]$Cliente, [string]$Tipo, [bool]$InstallOcs, [string]$ScriptDir, [string]$Usuario, [string]$Nota, [string]$Tecnico = '')
   $ctx = New-MantContext -Tag $Tag -Cliente $Cliente -InstallOcs $InstallOcs -ScriptDir $ScriptDir -Usuario $Usuario -Nota $Nota -Tecnico $Tecnico
-  Write-Host "STI Mantenimiento - $($ctx.cliente) - $($ctx.os.class)/$($ctx.formFactor) - $Tipo" -ForegroundColor Green
+  Write-Host "Fleet Maintenance Toolkit - $($ctx.cliente) - $($ctx.os.class)/$($ctx.formFactor) - $Tipo" -ForegroundColor Green
   $rel = Invoke-Relevamiento -Ctx $ctx -Tipo $Tipo
   Show-MantSummary -Rel $rel
   Invoke-ManualCapture -Rel $rel       # cuestionario de checks manuales (skip si no-interactivo)
@@ -132,7 +132,7 @@ function Show-Banner {
   param($Ctx)
   Write-Host ""
   Write-Host "  ============================================================" -ForegroundColor DarkGreen
-  Write-Host "    [ STI ]  STI MANTENIMIENTO  -  Mantenimiento de equipos" -ForegroundColor Green
+  Write-Host "    [ FLEET ]  FLEET TOOLKIT  -  Mantenimiento de equipos" -ForegroundColor Green
   Write-Host "  ============================================================" -ForegroundColor DarkGreen
   if ($Ctx) {
     $hostname = if ($Ctx.hw -and $Ctx.hw.hostname) { $Ctx.hw.hostname } else { $env:COMPUTERNAME }
@@ -191,7 +191,7 @@ function Start-MantMenu {
       '3' { if (-not $rel) { $rel = Invoke-Relevamiento -Ctx $ctx -Tipo $Tipo }; Show-HardwareIds -Hw $rel.hw }
       '4' {
         $ctx.installOcs = $true
-        $h = Invoke-STIModHerramientas -Ctx $ctx
+        $h = Invoke-ModHerramientas -Ctx $ctx
         $ocs = $h.items | Where-Object { $_.key -eq 'chk_ocs' }
         Write-Host ("  OCS: {0} - {1}" -f $ocs.status, $ocs.detail) -ForegroundColor Cyan
         $ctx.installOcs = $false

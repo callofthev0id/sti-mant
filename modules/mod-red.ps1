@@ -1,5 +1,5 @@
 ﻿# mod-red.ps1 - conectividad, TeamViewer, recursos compartidos (semi), RDP, WiFi (laptop).
-function Invoke-STIModRed {
+function Invoke-ModRed {
   param($Ctx)
   $items = @(); $errs = @()
   $isLaptop = ($Ctx.formFactor -eq 'laptop')
@@ -16,9 +16,9 @@ function Invoke-STIModRed {
   # chk_teamviewer: servicio TeamViewer corriendo.
   try {
     $tv = Get-Service -ErrorAction SilentlyContinue | Where-Object { $_.Name -match 'TeamViewer' } | Select-Object -First 1
-    if ($tv) { $items += New-CheckItem 'chk_teamviewer' 'TeamViewer Host STI' (Get-StatusBool ($tv.Status -eq 'Running')) $true "servicio:$($tv.Status)" }
-    else { $items += New-CheckItem 'chk_teamviewer' 'TeamViewer Host STI' 'Error' $true 'no instalado' }
-  } catch { $items += New-CheckItem 'chk_teamviewer' 'TeamViewer Host STI' 'N/A' $true ''; $errs += "teamviewer: $($_.Exception.Message)" }
+    if ($tv) { $items += New-CheckItem 'chk_teamviewer' 'TeamViewer Host' (Get-StatusBool ($tv.Status -eq 'Running')) $true "servicio:$($tv.Status)" }
+    else { $items += New-CheckItem 'chk_teamviewer' 'TeamViewer Host' 'Error' $true 'no instalado' }
+  } catch { $items += New-CheckItem 'chk_teamviewer' 'TeamViewer Host' 'N/A' $true ''; $errs += "teamviewer: $($_.Exception.Message)" }
 
   # chk_recursos_compartidos (SEMI): shares no-administrativos → detalle; técnico decide.
   try {

@@ -1,17 +1,17 @@
 ﻿# mod-servidores.ps1 - checks srv_* (corre sobre UN servidor). 5 funciones (1 por categoría).
 # Comparte patrón de collectors con terminales pero emite keys srv_*.
 
-function Invoke-STISrvSeguridad {
+function Invoke-SrvSeguridad {
   param($Ctx)
   $items = @(); $errs = @()
-  # srv_cuentas_sti
+  # srv_cuentas_admin
   try {
     $admins = @(Get-LocalGroupMember -SID 'S-1-5-32-544' -ErrorAction Stop | ForEach-Object { ($_.Name -split '\\')[-1].ToLower() })
     $esperadas = @($Ctx.cuentasAdmin | ForEach-Object { ([string]$_).ToLower() })
     $faltan = @($esperadas | Where-Object { $admins -notcontains $_ })
     $detAdmin = if ($faltan.Count) { "faltan cuentas admin: $($faltan -join ', ')" } else { 'cuentas admin OK' }
-    $items += New-CheckItem 'srv_cuentas_sti' 'Cuentas STI (admin)' (Get-StatusBool ($faltan.Count -eq 0)) $true $detAdmin
-  } catch { $items += New-CheckItem 'srv_cuentas_sti' 'Cuentas STI (admin)' 'N/A' $true ''; $errs += "cuentas: $($_.Exception.Message)" }
+    $items += New-CheckItem 'srv_cuentas_admin' 'Cuentas admin (gestionadas)' (Get-StatusBool ($faltan.Count -eq 0)) $true $detAdmin
+  } catch { $items += New-CheckItem 'srv_cuentas_admin' 'Cuentas admin (gestionadas)' 'N/A' $true ''; $errs += "cuentas: $($_.Exception.Message)" }
   # srv_firewall
   try { $fw = Get-NetFirewallProfile -ErrorAction Stop; $allOn = -not ($fw | Where-Object { -not $_.Enabled })
     $items += New-CheckItem 'srv_firewall' 'Firewall' (Get-StatusBool $allOn) $true (($fw | ForEach-Object { "$($_.Name):$([bool]$_.Enabled)" }) -join ' ')
@@ -36,7 +36,7 @@ function Invoke-STISrvSeguridad {
   @{ category = 'Seguridad'; items = $items; errors = $errs }
 }
 
-function Invoke-STISrvSistema {
+function Invoke-SrvSistema {
   param($Ctx)
   $items = @(); $errs = @()
   try { $since = (Get-Date).AddDays(-7); $n = 0
@@ -54,7 +54,7 @@ function Invoke-STISrvSistema {
   @{ category = 'Sistema'; items = $items; errors = $errs }
 }
 
-function Invoke-STISrvAlmacenamiento {
+function Invoke-SrvAlmacenamiento {
   param($Ctx)
   $items = @(); $errs = @()
   try { $pd = @(Get-PhysicalDisk -ErrorAction Stop); $bad = $pd | Where-Object { $_.HealthStatus -ne 'Healthy' }
@@ -73,7 +73,7 @@ function Invoke-STISrvAlmacenamiento {
   @{ category = 'Almacenamiento'; items = $items; errors = $errs }
 }
 
-function Invoke-STISrvServicios {
+function Invoke-SrvServicios {
   param($Ctx)
   $items = @(); $errs = @()
   # srv_ocs
@@ -105,9 +105,9 @@ function Invoke-STISrvServicios {
   } catch { $items += New-CheckItem 'srv_ocs' 'OCS Agent + inventario' 'N/A' $true ''; $errs += "ocs: $($_.Exception.Message)" }
   # srv_teamviewer
   try { $tv = Get-Service -ErrorAction SilentlyContinue | Where-Object { $_.Name -match 'TeamViewer' } | Select-Object -First 1
-    if ($tv) { $items += New-CheckItem 'srv_teamviewer' 'TeamViewer Host STI' (Get-StatusBool ($tv.Status -eq 'Running')) $true "servicio:$($tv.Status)" }
-    else { $items += New-CheckItem 'srv_teamviewer' 'TeamViewer Host STI' 'Error' $true 'no instalado' }
-  } catch { $items += New-CheckItem 'srv_teamviewer' 'TeamViewer Host STI' 'N/A' $true ''; $errs += "tv: $($_.Exception.Message)" }
+    if ($tv) { $items += New-CheckItem 'srv_teamviewer' 'TeamViewer Host' (Get-StatusBool ($tv.Status -eq 'Running')) $true "servicio:$($tv.Status)" }
+    else { $items += New-CheckItem 'srv_teamviewer' 'TeamViewer Host' 'Error' $true 'no instalado' }
+  } catch { $items += New-CheckItem 'srv_teamviewer' 'TeamViewer Host' 'N/A' $true ''; $errs += "tv: $($_.Exception.Message)" }
   # srv_encendido_auto / srv_apagado_auto (SEMI): best-effort - tareas programadas de apagado; BIOS wake no accesible.
   try {
     $shutTask = @(Get-ScheduledTask -ErrorAction SilentlyContinue | Where-Object { $_.Actions.Execute -match 'shutdown' })
@@ -143,7 +143,7 @@ function Invoke-STISrvServicios {
   @{ category = 'Servicios'; items = $items; errors = $errs }
 }
 
-function Invoke-STISrvRed {
+function Invoke-SrvRed {
   param($Ctx)
   $items = @(); $errs = @()
   try {

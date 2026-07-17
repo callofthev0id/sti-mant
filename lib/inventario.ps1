@@ -185,18 +185,18 @@ function New-InventarioHtml {
 <link href='https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap' rel='stylesheet'>
 <style>
 body{font-family:'Space Grotesk','Helvetica Neue',Arial,sans-serif;color:#111;margin:0}
-.banner{background:#053028;color:#fff;padding:13px 18px;display:flex;align-items:center;gap:12px;border-bottom:3px solid #43C961}
+.banner{background:#0E271B;color:#fff;padding:13px 18px;display:flex;align-items:center;gap:12px;border-bottom:3px solid #5EAE87}
 .banner h1{font-size:18px;margin:0}
-.meta{padding:8px 18px;color:#4a4a4a;font-size:13px}.meta b{color:#053028}
-.sec{font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#053028;margin:16px 18px 6px;border-left:3px solid #43C961;padding-left:8px}
+.meta{padding:8px 18px;color:#4a4a4a;font-size:13px}.meta b{color:#0E271B}
+.sec{font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#0E271B;margin:16px 18px 6px;border-left:3px solid #5EAE87;padding-left:8px}
 .kv{margin:0 18px;font-size:13px}.kv span{display:inline-block;min-width:150px;color:#717171}
 table{border-collapse:collapse;font-size:12px;margin:4px 18px 8px;width:calc(100% - 36px)}
 th,td{border:1px solid #d8d8d8;padding:4px 8px;text-align:left}
-th{background:#053028;color:#fff;font-size:11px;text-transform:uppercase}
-code{font-family:'DM Mono','Courier New',monospace;font-size:12px;color:#053028}
+th{background:#0E271B;color:#fff;font-size:11px;text-transform:uppercase}
+code{font-family:'DM Mono','Courier New',monospace;font-size:12px;color:#0E271B}
 .cnt{color:#717171;font-size:11px}
 </style></head><body>
-<div class='banner'>$logoTag<h1>STI MANTENIMIENTO · Relevamiento de equipo</h1></div>
+<div class='banner'>$logoTag<h1>FLEET TOOLKIT · Relevamiento de equipo</h1></div>
 <div class='meta'><b>Cliente:</b> $(& $esc $Inv.meta.cliente) &nbsp;·&nbsp; <b>Equipo:</b> $(& $esc $Inv.meta.hostname) &nbsp;·&nbsp; <b>Usuario:</b> $(& $esc $Inv.meta.usuario) &nbsp;·&nbsp; <b>Fecha:</b> $fecha</div>
 
 <div class='sec'>Sistema operativo</div>

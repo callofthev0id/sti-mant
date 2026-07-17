@@ -1,4 +1,4 @@
-# get.ps1 - bootstrap remoto de STI Mantenimiento (interfaz grafica).
+# get.ps1 - bootstrap remoto de Fleet Maintenance Toolkit (interfaz grafica).
 # Uso en cualquier equipo Windows, desde PowerShell:
 #   irm https://raw.githubusercontent.com/callofthev0id/sti-mant/main/get.ps1 | iex
 #
@@ -10,7 +10,7 @@
 $ErrorActionPreference = 'Stop'
 $repo = 'callofthev0id/sti-mant'
 
-function Write-Paso($t) { Write-Host "[STI] $t" -ForegroundColor Green }
+function Write-Paso($t) { Write-Host "[FLEET] $t" -ForegroundColor Green }
 
 try {
   [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
@@ -20,7 +20,7 @@ Write-Paso 'Buscando la ultima version publicada...'
 try {
   $rel = Invoke-RestMethod -Uri "https://api.github.com/repos/$repo/releases/latest" -Headers @{ 'User-Agent' = 'sti-mant-bootstrap' }
 } catch {
-  Write-Host "[STI] No se pudo consultar el ultimo release ($($_.Exception.Message))." -ForegroundColor Red
+  Write-Host "[FLEET] No se pudo consultar el ultimo release ($($_.Exception.Message))." -ForegroundColor Red
   Write-Host '      Verifica la conexion a internet y volve a intentar.' -ForegroundColor Red
   return
 }
@@ -28,7 +28,7 @@ try {
 # Asset preferido: el dist single-file de la GUI (sti-gui-v<ver>.ps1).
 $asset = @($rel.assets | Where-Object { $_.name -like 'sti-gui-v*.ps1' }) | Select-Object -First 1
 if (-not $asset) {
-  Write-Host "[STI] El release $($rel.tag_name) no publica el dist de la GUI (sti-gui-v*.ps1)." -ForegroundColor Red
+  Write-Host "[FLEET] El release $($rel.tag_name) no publica el dist de la GUI (sti-gui-v*.ps1)." -ForegroundColor Red
   return
 }
 
@@ -37,7 +37,7 @@ Write-Paso "Descargando $($asset.name) ($([math]::Round($asset.size/1KB)) KB)...
 try {
   Invoke-WebRequest -Uri $asset.browser_download_url -OutFile $destino -Headers @{ 'User-Agent' = 'sti-mant-bootstrap' }
 } catch {
-  Write-Host "[STI] Fallo la descarga ($($_.Exception.Message))." -ForegroundColor Red
+  Write-Host "[FLEET] Fallo la descarga ($($_.Exception.Message))." -ForegroundColor Red
   return
 }
 
@@ -56,7 +56,7 @@ if ($esAdmin) {
   } catch {
     # El usuario cancelo el UAC: abrir sin elevar (las acciones de Utilidades y algunos checks
     # quedaran limitados, el resto funciona).
-    Write-Host '[STI] Elevacion cancelada; abriendo sin privilegios de administrador.' -ForegroundColor Yellow
+    Write-Host '[FLEET] Elevacion cancelada; abriendo sin privilegios de administrador.' -ForegroundColor Yellow
     Start-Process -FilePath 'powershell.exe' -ArgumentList $psArgs
   }
 }

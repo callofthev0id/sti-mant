@@ -43,10 +43,10 @@ function Get-SafeFileComponent {
 function Get-SemColor {
   param([string]$Status)
   switch ($Status) {
-    'Ok'          { '#43C961' }
-    'Advertencia' { '#F2C03D' }
-    'Error'       { '#E07820' }
-    'Crítico'     { '#F05754' }
+    'Ok'          { '#5EAE87' }
+    'Advertencia' { '#D7A858' }
+    'Error'       { '#C77539' }
+    'Crítico'     { '#DA6A72' }
     default       { '#C8C8C8' }   # N/A / vacío
   }
 }
@@ -93,19 +93,19 @@ bios_serial: <code>$(& $esc $HwIds.bios_serial)</code> &nbsp; mac: <code>$(& $es
 <link href='https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap' rel='stylesheet'>
 <style>
 body{font-family:'Space Grotesk','Helvetica Neue',Arial,sans-serif;color:#111;margin:0;background:#fff}
-.banner{background:#053028;color:#fff;padding:12px 18px;display:flex;align-items:center;gap:14px}
+.banner{background:#0E271B;color:#fff;padding:12px 18px;display:flex;align-items:center;gap:14px}
 .banner h1{font-size:18px;margin:0;letter-spacing:.04em}
 .meta{padding:10px 18px;background:#f4f4f4;font-size:13px;color:#333}
-.meta b{color:#053028}
+.meta b{color:#0E271B}
 table{width:100%;border-collapse:collapse;font-size:12px}
 td{border:1px solid #ddd;padding:5px 9px}
-tr.cat td{background:#2B9C70;color:#fff;font-weight:700;text-transform:uppercase;font-size:11px;letter-spacing:.05em}
-tr.hdr th{background:#053028;color:#fff;font-size:11px;padding:6px 9px;text-align:center}
+tr.cat td{background:#428564;color:#fff;font-weight:700;text-transform:uppercase;font-size:11px;letter-spacing:.05em}
+tr.hdr th{background:#0E271B;color:#fff;font-size:11px;padding:6px 9px;text-align:center}
 .det{color:#555;font-size:11px}
-code{font-family:'DM Mono',Consolas,monospace;font-size:11px;color:#053028}
-.ids{padding:10px 18px;font-size:12px;background:#eafaf0;border-top:2px solid #43C961}
+code{font-family:'DM Mono',Consolas,monospace;font-size:11px;color:#0E271B}
+.ids{padding:10px 18px;font-size:12px;background:#EDF7F2;border-top:2px solid #5EAE87}
 </style></head><body>
-<div class='banner'>$logoTag<h1>STI MANTENIMIENTO &nbsp;·&nbsp; RELEVAMIENTO DE EQUIPO</h1></div>
+<div class='banner'>$logoTag<h1>FLEET TOOLKIT &nbsp;·&nbsp; RELEVAMIENTO DE EQUIPO</h1></div>
 <div class='meta'><b>Cliente:</b> $(& $esc $Ctx.cliente) &nbsp;·&nbsp; <b>Equipo:</b> $(& $esc $hostName) &nbsp;·&nbsp; <b>SO:</b> $(& $esc $Ctx.os.caption) &nbsp;·&nbsp; <b>Tipo:</b> $(& $esc $Ctx.formFactor) &nbsp;·&nbsp; <b>Fecha:</b> $(& $esc $fecha)</div>
 $idsHtml
 <table>$rowsHtml</table>
@@ -113,7 +113,7 @@ $idsHtml
 "@
 
   $safeHost = Get-SafeFileComponent $hostName
-  $out = Join-Path (Get-MantDir) "${safeHost}_STI_MANT_${Tipo}_${stamp}.html"
+  $out = Join-Path (Get-MantDir) "${safeHost}_FLEET_MANT_${Tipo}_${stamp}.html"
   $html | Out-File -FilePath $out -Encoding UTF8
   $out
 }
@@ -149,7 +149,7 @@ function New-MetaExport {
     errores = @($Rel.errors)
   }
   $json = $obj | ConvertTo-Json -Depth 8
-  $out = Join-Path (Get-MantDir) "$(Get-SafeFileComponent $Rel.hw.hostname)_STI_MANT_${Tipo}_${stampFile}.json"
+  $out = Join-Path (Get-MantDir) "$(Get-SafeFileComponent $Rel.hw.hostname)_FLEET_MANT_${Tipo}_${stampFile}.json"
   $json | Out-File -FilePath $out -Encoding UTF8
   $out
 }

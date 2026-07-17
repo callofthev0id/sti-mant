@@ -5,9 +5,9 @@ BeforeAll {
   . "$PSScriptRoot/../lib/audit.ps1"
 }
 
-Describe "New-StiAuditRecord" {
+Describe "New-AuditRecord" {
   It "arma los campos estructurados con timestamp ISO y auto-detecta tecnico/host" {
-    $r = New-StiAuditRecord -Accion 'apply' -UtilId 'faststartup' -UtilLabel 'Fast Startup' -Categoria 'tweaks' -EstadoAnterior 'activo' -EstadoNuevo 'apagado' -Resultado 'ok'
+    $r = New-AuditRecord -Accion 'apply' -UtilId 'faststartup' -UtilLabel 'Fast Startup' -Categoria 'tweaks' -EstadoAnterior 'activo' -EstadoNuevo 'apagado' -Resultado 'ok'
     $r.accion          | Should -Be 'apply'
     $r.util_id         | Should -Be 'faststartup'
     $r.util_label      | Should -Be 'Fast Startup'
@@ -19,29 +19,29 @@ Describe "New-StiAuditRecord" {
     $r.hostname        | Should -Not -BeNullOrEmpty
   }
   It "respeta tecnico/host explicitos" {
-    $r = New-StiAuditRecord -Accion 'scan' -Tecnico 'jdoe' -Hostname 'PC01'
+    $r = New-AuditRecord -Accion 'scan' -Tecnico 'jdoe' -Hostname 'PC01'
     $r.tecnico | Should -Be 'jdoe'; $r.hostname | Should -Be 'PC01'
   }
 }
 
-Describe "Get-StiAuditEventId / EntryType" {
+Describe "Get-AuditEventId / EntryType" {
   It "mapea accion -> eventId estable" {
-    Get-StiAuditEventId -Accion 'scan'  | Should -Be 1001
-    Get-StiAuditEventId -Accion 'apply' | Should -Be 1002
-    Get-StiAuditEventId -Accion 'undo'  | Should -Be 1003
-    Get-StiAuditEventId -Accion 'safety'| Should -Be 1004
+    Get-AuditEventId -Accion 'scan'  | Should -Be 1001
+    Get-AuditEventId -Accion 'apply' | Should -Be 1002
+    Get-AuditEventId -Accion 'undo'  | Should -Be 1003
+    Get-AuditEventId -Accion 'safety'| Should -Be 1004
   }
   It "mapea resultado -> EntryType" {
-    Get-StiAuditEntryType -Resultado 'ok'            | Should -Be 'Information'
-    Get-StiAuditEntryType -Resultado 'error: x'      | Should -Be 'Error'
-    Get-StiAuditEntryType -Resultado 'aviso: revisar'| Should -Be 'Warning'
+    Get-AuditEntryType -Resultado 'ok'            | Should -Be 'Information'
+    Get-AuditEntryType -Resultado 'error: x'      | Should -Be 'Error'
+    Get-AuditEntryType -Resultado 'aviso: revisar'| Should -Be 'Warning'
   }
 }
 
-Describe "Format-StiAuditTextLine" {
+Describe "Format-AuditTextLine" {
   It "arma una linea humana con util, transicion y resultado" {
-    $rec = New-StiAuditRecord -Accion 'apply' -UtilId 'faststartup' -UtilLabel 'Fast Startup' -EstadoAnterior 'activo' -EstadoNuevo 'apagado' -Resultado 'ok' -Tecnico 't' -Hostname 'h'
-    $line = Format-StiAuditTextLine -Record $rec
+    $rec = New-AuditRecord -Accion 'apply' -UtilId 'faststartup' -UtilLabel 'Fast Startup' -EstadoAnterior 'activo' -EstadoNuevo 'apagado' -Resultado 'ok' -Tecnico 't' -Hostname 'h'
+    $line = Format-AuditTextLine -Record $rec
     $line | Should -Match 'APPLY'
     $line | Should -Match 'Fast Startup \[faststartup\]'
     $line | Should -Match 'activo -> apagado'
@@ -49,16 +49,16 @@ Describe "Format-StiAuditTextLine" {
   }
 }
 
-Describe "Write-StiAudit (tres salidas, mockeadas)" {
+Describe "Write-Audit (tres salidas, mockeadas)" {
   It "escribe Event Log + JSON-lines + texto cuando todo esta disponible" {
-    Mock Initialize-StiAuditEventSource { $true }
+    Mock Initialize-AuditEventSource { $true }
     Mock Write-EventLog {}
-    Mock Initialize-StiAuditStore { $true }
+    Mock Initialize-AuditStore { $true }
     $script:__json = $null; $script:__text = $null
     Mock Add-Content {
       if ($Path -match 'jsonl') { $script:__json = $Value } else { $script:__text = $Value }
     }
-    $out = Write-StiAudit -Accion 'apply' -UtilId 'telemetria' -UtilLabel 'Telemetria' -Categoria 'tweaks' -EstadoAnterior 'activa' -EstadoNuevo 'apagada' -Resultado 'ok'
+    $out = Write-Audit -Accion 'apply' -UtilId 'telemetria' -UtilLabel 'Telemetria' -Categoria 'tweaks' -EstadoAnterior 'activa' -EstadoNuevo 'apagada' -Resultado 'ok'
     $out.eventlog | Should -BeTrue
     $out.json     | Should -BeTrue
     $out.texto    | Should -BeTrue
@@ -70,44 +70,44 @@ Describe "Write-StiAudit (tres salidas, mockeadas)" {
     $script:__text | Should -Match 'telemetria'
   }
   It "degrada sin Event Log (no admin) pero igual escribe los archivos" {
-    Mock Initialize-StiAuditEventSource { $false }
+    Mock Initialize-AuditEventSource { $false }
     Mock Write-EventLog { throw 'no source' }
-    Mock Initialize-StiAuditStore { $true }
+    Mock Initialize-AuditStore { $true }
     Mock Add-Content {}
-    $out = Write-StiAudit -Accion 'scan' -Resultado 'ok'
+    $out = Write-Audit -Accion 'scan' -Resultado 'ok'
     $out.eventlog | Should -BeFalse
     $out.json     | Should -BeTrue
     $out.texto    | Should -BeTrue
   }
   It "no tira si los archivos fallan (best-effort)" {
-    Mock Initialize-StiAuditEventSource { $false }
-    Mock Initialize-StiAuditStore { $false }
+    Mock Initialize-AuditEventSource { $false }
+    Mock Initialize-AuditStore { $false }
     Mock Add-Content { throw 'sin permiso' }
-    { Write-StiAudit -Accion 'apply' -UtilId 'x' } | Should -Not -Throw
+    { Write-Audit -Accion 'apply' -UtilId 'x' } | Should -Not -Throw
   }
 }
 
-Describe "Get-StiAuditRecent" {
+Describe "Get-AuditRecent" {
   It "devuelve array vacio si no hay archivo" {
     Mock Test-Path { $false }
-    @(Get-StiAuditRecent).Count | Should -Be 0
+    @(Get-AuditRecent).Count | Should -Be 0
   }
   It "lee las ultimas N entradas, mas recientes primero, salteando lineas corruptas" {
     Mock Test-Path { $true }
-    $j1 = (New-StiAuditRecord -Accion 'apply' -UtilId 'a' | ConvertTo-Json -Compress)
-    $j2 = (New-StiAuditRecord -Accion 'undo'  -UtilId 'b' | ConvertTo-Json -Compress)
+    $j1 = (New-AuditRecord -Accion 'apply' -UtilId 'a' | ConvertTo-Json -Compress)
+    $j2 = (New-AuditRecord -Accion 'undo'  -UtilId 'b' | ConvertTo-Json -Compress)
     Mock Get-Content { @($j1, 'lineacorrupta{', $j2) }
-    $r = @(Get-StiAuditRecent -Count 10)
+    $r = @(Get-AuditRecent -Count 10)
     $r.Count | Should -Be 2          # la corrupta se saltea
     $r[0].util_id | Should -Be 'b'   # mas reciente primero
     $r[1].util_id | Should -Be 'a'
   }
 }
 
-Describe "Format-StiAuditPanelLine" {
+Describe "Format-AuditPanelLine" {
   It "compacta el record a una linea legible" {
     $rec = [pscustomobject]@{ timestamp='2026-06-18T10:00:00-03:00'; accion='apply'; util_id='faststartup'; util_label='Fast Startup'; estado_anterior='activo'; estado_nuevo='apagado'; resultado='ok' }
-    $line = Format-StiAuditPanelLine -Record $rec
+    $line = Format-AuditPanelLine -Record $rec
     $line | Should -Match 'APPLY'
     $line | Should -Match 'Fast Startup'
     $line | Should -Match 'ok'

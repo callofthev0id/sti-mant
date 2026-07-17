@@ -64,10 +64,10 @@ Describe "Get-InvUptime" {
 }
 
 Describe "Get-InvSemBrush" {
-  It "Ok -> StiVerde" { Get-InvSemBrush 'Ok' | Should -Be 'StiVerde' }
-  It "Advertencia -> StiAmbar" { Get-InvSemBrush 'Advertencia' | Should -Be 'StiAmbar' }
-  It "Critico -> StiRojo" { Get-InvSemBrush 'Critico' | Should -Be 'StiRojo' }
-  It "desconocido -> StiNa" { Get-InvSemBrush 'X' | Should -Be 'StiNa' }
+  It "Ok -> AppAccent" { Get-InvSemBrush 'Ok' | Should -Be 'AppAccent' }
+  It "Advertencia -> AppAmbar" { Get-InvSemBrush 'Advertencia' | Should -Be 'AppAmbar' }
+  It "Critico -> AppRojo" { Get-InvSemBrush 'Critico' | Should -Be 'AppRojo' }
+  It "desconocido -> AppNa" { Get-InvSemBrush 'X' | Should -Be 'AppNa' }
 }
 
 Describe "Get-InvEolEstado" {
@@ -222,7 +222,7 @@ Describe "PanelInventario (carga WPF real)" {
 
   It "XamlReader.Load instancia la ventana y los hosts del panel se encuentran" -Skip:(-not $script:wpfOk) {
     $libDir = "$PSScriptRoot/../gui/lib"
-    $xaml = New-StiWindowXaml -Hostname 'CLAUDE' -Version '1.0'
+    $xaml = New-AppWindowXaml -Hostname 'CLAUDE' -Version '1.0'
     $rs = [runspacefactory]::CreateRunspace(); $rs.ApartmentState = 'STA'; $rs.Open()
     $ps = [powershell]::Create(); $ps.Runspace = $rs
     [void]$ps.AddScript({

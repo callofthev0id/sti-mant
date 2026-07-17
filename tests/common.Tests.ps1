@@ -53,12 +53,12 @@ Describe "New-CheckItem" {
 Describe "CHK_ORDER" {
   It "terminales: 26 checks, orden correcto" {
     $CHK_ORDER_TERM.Count | Should -Be 26
-    $CHK_ORDER_TERM[0]  | Should -Be "chk_cuentas_sti"
+    $CHK_ORDER_TERM[0]  | Should -Be "chk_cuentas_admin"
     $CHK_ORDER_TERM[-1] | Should -Be "chk_limpieza_temp"
   }
   It "servidores: 19 checks" {
     $CHK_ORDER_SRV.Count | Should -Be 19
-    $CHK_ORDER_SRV[0]  | Should -Be "srv_cuentas_sti"
+    $CHK_ORDER_SRV[0]  | Should -Be "srv_cuentas_admin"
     $CHK_ORDER_SRV[-1] | Should -Be "srv_recursos_compartidos"
   }
 }
@@ -78,35 +78,35 @@ Describe "ConvertTo-HtmlSafe" {
   }
 }
 
-Describe "STI_CUENTAS_ADMIN / Get-CuentasAdmin" {
+Describe "FLEET_CUENTAS_ADMIN / Get-CuentasAdmin" {
   It "no trae nombres hardcodeados por default (sin entorno ni archivo)" {
-    $old = $env:STI_CUENTAS_ADMIN
-    $env:STI_CUENTAS_ADMIN = $null
+    $old = $env:FLEET_CUENTAS_ADMIN
+    $env:FLEET_CUENTAS_ADMIN = $null
     try {
       $r = Get-CuentasAdmin -LocalFile (Join-Path $TestDrive 'no-existe.local')
       @($r).Count | Should -Be 0
-    } finally { $env:STI_CUENTAS_ADMIN = $old }
+    } finally { $env:FLEET_CUENTAS_ADMIN = $old }
   }
   It "lee de la variable de entorno (coma/punto y coma)" {
-    $old = $env:STI_CUENTAS_ADMIN
-    $env:STI_CUENTAS_ADMIN = 'admin1, admin2;admin3'
+    $old = $env:FLEET_CUENTAS_ADMIN
+    $env:FLEET_CUENTAS_ADMIN = 'admin1, admin2;admin3'
     try {
       $r = @(Get-CuentasAdmin -LocalFile (Join-Path $TestDrive 'no-existe.local'))
       $r.Count | Should -Be 3
       $r[0] | Should -Be 'admin1'
       $r[2] | Should -Be 'admin3'
-    } finally { $env:STI_CUENTAS_ADMIN = $old }
+    } finally { $env:FLEET_CUENTAS_ADMIN = $old }
   }
   It "lee de archivo local (una por línea, ignora comentarios)" {
-    $old = $env:STI_CUENTAS_ADMIN
-    $env:STI_CUENTAS_ADMIN = $null
-    $lf = Join-Path $TestDrive 'sti-cuentas.local'
+    $old = $env:FLEET_CUENTAS_ADMIN
+    $env:FLEET_CUENTAS_ADMIN = $null
+    $lf = Join-Path $TestDrive 'cuentas-admin.local'
     "# comentario`r`ncuentaA`r`n`r`ncuentaB" | Out-File -FilePath $lf -Encoding UTF8
     try {
       $r = @(Get-CuentasAdmin -LocalFile $lf)
       $r.Count | Should -Be 2
       $r[0] | Should -Be 'cuentaA'
       $r[1] | Should -Be 'cuentaB'
-    } finally { $env:STI_CUENTAS_ADMIN = $old }
+    } finally { $env:FLEET_CUENTAS_ADMIN = $old }
   }
 }

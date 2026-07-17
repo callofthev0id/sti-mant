@@ -9,7 +9,7 @@ $script:MANT_EST_SEM = @('Ok', 'Advertencia', 'Error', 'Crítico', 'N/A')
 # Catalogo terminal: name, label, automated, categoria. ORDEN = SPECS.terminales.rowColumns.
 # Categoria = mapeo GUI (spec 6.4), NO esta en column-spec.
 $script:MANT_CAT_TERM = @(
-  @{ name = 'chk_cuentas_sti';         label = 'Cuentas STI (admin)';        automated = $true;  categoria = 'Seguridad' }
+  @{ name = 'chk_cuentas_admin';         label = 'Cuentas admin (gestionadas)';        automated = $true;  categoria = 'Seguridad' }
   @{ name = 'chk_firewall';            label = 'Firewall';                   automated = $true;  categoria = 'Seguridad' }
   @{ name = 'chk_antivirus_eset';      label = 'Antivirus ESET';             automated = $true;  categoria = 'Seguridad' }
   @{ name = 'chk_updates';             label = 'Updates Windows';            automated = $true;  categoria = 'Sistema y actualizaciones' }
@@ -27,7 +27,7 @@ $script:MANT_CAT_TERM = @(
   @{ name = 'chk_ups';                 label = 'UPS';                        automated = $false; categoria = 'Hardware y salud' }
   @{ name = 'chk_bateria';             label = 'Batería (laptop)';           automated = $true;  categoria = 'Hardware y salud' }
   @{ name = 'chk_conectividad';        label = 'Conectividad (gateway+DNS)'; automated = $true;  categoria = 'Red y herramientas' }
-  @{ name = 'chk_teamviewer';          label = 'TeamViewer Host STI';        automated = $true;  categoria = 'Red y herramientas' }
+  @{ name = 'chk_teamviewer';          label = 'TeamViewer Host';        automated = $true;  categoria = 'Red y herramientas' }
   @{ name = 'chk_recursos_compartidos';label = 'Recursos compartidos';       automated = $false; categoria = 'Seguridad' }
   @{ name = 'chk_rdp';                 label = 'Configuración RDP';          automated = $true;  categoria = 'Seguridad' }
   @{ name = 'chk_wifi';                label = 'Adaptador WiFi (laptop)';    automated = $true;  categoria = 'Red y herramientas' }
@@ -39,7 +39,7 @@ $script:MANT_CAT_TERM = @(
 
 # Catalogo servidor: ORDEN = SPECS.servidores.rowColumns. host_fisico no es check (se omite).
 $script:MANT_CAT_SRV = @(
-  @{ name = 'srv_cuentas_sti';          label = 'Cuentas STI (admin)';        automated = $true;  categoria = 'Seguridad' }
+  @{ name = 'srv_cuentas_admin';          label = 'Cuentas admin (gestionadas)';        automated = $true;  categoria = 'Seguridad' }
   @{ name = 'srv_firewall';             label = 'Firewall';                   automated = $true;  categoria = 'Seguridad' }
   @{ name = 'srv_antivirus_eset';       label = 'Antivirus ESET';             automated = $true;  categoria = 'Seguridad' }
   @{ name = 'srv_updates';              label = 'Updates Windows Server';     automated = $true;  categoria = 'Sistema y actualizaciones' }
@@ -51,7 +51,7 @@ $script:MANT_CAT_SRV = @(
   @{ name = 'srv_espacio_disco';        label = 'Espacio en disco';           automated = $true;  categoria = 'Hardware y salud' }
   @{ name = 'srv_backup';               label = 'Backup (Acronis/Cobian)';    automated = $false; categoria = 'Red y herramientas' }
   @{ name = 'srv_ocs';                  label = 'OCS Agent + inventario';     automated = $true;  categoria = 'Red y herramientas' }
-  @{ name = 'srv_teamviewer';           label = 'TeamViewer Host STI';        automated = $true;  categoria = 'Red y herramientas' }
+  @{ name = 'srv_teamviewer';           label = 'TeamViewer Host';        automated = $true;  categoria = 'Red y herramientas' }
   @{ name = 'srv_encendido_auto';       label = 'Encendido automático';       automated = $true;  categoria = 'Sistema y actualizaciones' }
   @{ name = 'srv_apagado_auto';         label = 'Apagado automático';         automated = $true;  categoria = 'Sistema y actualizaciones' }
   @{ name = 'srv_servicios_rol';        label = 'Servicios por rol';          automated = $true;  categoria = 'Sistema y actualizaciones' }
@@ -145,11 +145,11 @@ function Get-MantPendientes {
 function Get-SemBrushKey {
   param([string]$Estado)
   switch (Get-MantEstadoNorm $Estado) {
-    'Ok'          { 'StiVerde' }
-    'Advertencia' { 'StiAmbar' }
-    'Error'       { 'StiNaranja' }
-    'Crítico'     { 'StiRojo' }
-    default       { 'StiNa' }
+    'Ok'          { 'AppAccent' }
+    'Advertencia' { 'AppAmbar' }
+    'Error'       { 'AppNaranja' }
+    'Crítico'     { 'AppRojo' }
+    default       { 'AppNa' }
   }
 }
 
@@ -157,11 +157,11 @@ function Get-SemBrushKey {
 function Get-SemHex {
   param([string]$Estado)
   switch (Get-MantEstadoNorm $Estado) {
-    'Ok'          { '#43C961' }
-    'Advertencia' { '#e0a93a' }
-    'Error'       { '#E07820' }
-    'Crítico'     { '#F05754' }
-    default       { '#6a8a7b' }
+    'Ok'          { '#5EAE87' }
+    'Advertencia' { '#C79C53' }
+    'Error'       { '#C77539' }
+    'Crítico'     { '#DA6A72' }
+    default       { '#71837A' }
   }
 }
 
@@ -170,11 +170,11 @@ function Get-SemHex {
 function Get-SemBadgeBg {
   param([string]$Estado)
   switch (Get-MantEstadoNorm $Estado) {
-    'Ok'          { '#16331f' }
-    'Advertencia' { '#33290f' }
-    'Error'       { '#33220f' }
-    'Crítico'     { '#3a1717' }
-    default       { '#1c2a24' }
+    'Ok'          { '#1C2D25' }
+    'Advertencia' { '#2E2414' }
+    'Error'       { '#2E1F14' }
+    'Crítico'     { '#351C1E' }
+    default       { '#1F2723' }
   }
 }
 
@@ -323,15 +323,15 @@ function New-PanelMantenimientoXaml {
         <Grid.Resources>
           <!-- Estilos LOCALES del panel (x:Key prefijado 'Mant' para no chocar con el theme global). -->
           <Style x:Key="MantPillBorder" TargetType="Border">
-            <Setter Property="Background" Value="{StaticResource StiCard}"/>
-            <Setter Property="BorderBrush" Value="{StaticResource StiBorde}"/>
+            <Setter Property="Background" Value="{StaticResource AppCard}"/>
+            <Setter Property="BorderBrush" Value="{StaticResource AppBorde}"/>
             <Setter Property="BorderThickness" Value="1"/>
             <Setter Property="CornerRadius" Value="13"/>
             <Setter Property="Padding" Value="11,5"/>
             <Setter Property="Margin" Value="0,0,7,0"/>
           </Style>
           <Style x:Key="MantPillText" TargetType="TextBlock">
-            <Setter Property="Foreground" Value="{StaticResource StiTexto}"/>
+            <Setter Property="Foreground" Value="{StaticResource AppTexto}"/>
             <Setter Property="FontFamily" Value="Space Grotesk, Segoe UI"/>
             <Setter Property="FontSize" Value="11.5"/>
             <Setter Property="FontWeight" Value="SemiBold"/>
@@ -345,9 +345,9 @@ function New-PanelMantenimientoXaml {
         </Grid.RowDefinitions>
 
         <!-- Resumen por estado (spec 6.3): conteo visual por estado del semaforo. -->
-        <Border Grid.Row="0" Background="{StaticResource StiChipBar}" BorderBrush="{StaticResource StiVerde}" BorderThickness="0,0,0,2" Padding="4,10" Margin="0,0,0,10">
+        <Border Grid.Row="0" Background="{StaticResource AppChipBar}" BorderBrush="{StaticResource AppAccent}" BorderThickness="0,0,0,2" Padding="4,10" Margin="0,0,0,10">
           <StackPanel>
-            <TextBlock Text="RESUMEN DEL EQUIPO" Foreground="{StaticResource StiTenue}" FontFamily="Space Grotesk, Segoe UI" FontWeight="Bold" FontSize="10" Margin="2,0,0,7"/>
+            <TextBlock Text="RESUMEN DEL EQUIPO" Foreground="{StaticResource AppTenue}" FontFamily="Space Grotesk, Segoe UI" FontWeight="Bold" FontSize="10" Margin="2,0,0,7"/>
             <ItemsControl x:Name="MantResumen">
               <ItemsControl.ItemsPanel>
                 <ItemsPanelTemplate><WrapPanel Orientation="Horizontal"/></ItemsPanelTemplate>
@@ -375,10 +375,10 @@ function New-PanelMantenimientoXaml {
         </ScrollViewer>
 
         <!-- Pie: pendientes + generar (spec 6.11) -->
-        <Border Grid.Row="2" Background="{StaticResource StiChipBar}" BorderBrush="{StaticResource StiBordeSutil}" BorderThickness="0,1,0,0" Padding="4,11" Margin="0,10,0,0">
+        <Border Grid.Row="2" Background="{StaticResource AppChipBar}" BorderBrush="{StaticResource AppBordeSutil}" BorderThickness="0,1,0,0" Padding="4,11" Margin="0,10,0,0">
           <Grid>
-            <TextBlock x:Name="MantPendientes" Foreground="{StaticResource StiTexto2}" FontFamily="Space Grotesk, Segoe UI" FontSize="11.5" VerticalAlignment="Center" Text="Relevá el equipo para poblar los checks."/>
-            <Button x:Name="BtnGenerarMant" Style="{StaticResource StiBtnPrimary}" Content="Generar JSON del equipo" HorizontalAlignment="Right"/>
+            <TextBlock x:Name="MantPendientes" Foreground="{StaticResource AppTexto2}" FontFamily="Space Grotesk, Segoe UI" FontSize="11.5" VerticalAlignment="Center" Text="Relevá el equipo para poblar los checks."/>
+            <Button x:Name="BtnGenerarMant" Style="{StaticResource AppBtnPrimary}" Content="Generar JSON del equipo" HorizontalAlignment="Right"/>
           </Grid>
         </Border>
       </Grid>
@@ -403,14 +403,14 @@ function Update-MantResumenUI {
   }
   $pills = New-Object System.Collections.ArrayList
   $defs = @(
-    @{ k = 'Ok';          hex = '#43C961' }
-    @{ k = 'Advertencia'; hex = '#e0a93a' }
-    @{ k = 'Error';       hex = '#E07820' }
-    @{ k = 'Crítico';     hex = '#F05754' }
-    @{ k = 'N/A';         hex = '#6a8a7b' }
+    @{ k = 'Ok';          hex = '#5EAE87' }
+    @{ k = 'Advertencia'; hex = '#C79C53' }
+    @{ k = 'Error';       hex = '#C77539' }
+    @{ k = 'Crítico';     hex = '#DA6A72' }
+    @{ k = 'N/A';         hex = '#71837A' }
   )
   foreach ($d in $defs) { $n = [int]$r[$d.k]; if ($n -gt 0) { [void]$pills.Add([pscustomobject]@{ Color = $d.hex; Texto = "$n $($d.k)" }) } }
-  if ([int]$r.AMarcar -gt 0) { [void]$pills.Add([pscustomobject]@{ Color = '#e0a93a'; Texto = "$([int]$r.AMarcar) a marcar (técnico)" }) }
+  if ([int]$r.AMarcar -gt 0) { [void]$pills.Add([pscustomobject]@{ Color = '#C79C53'; Texto = "$([int]$r.AMarcar) a marcar (técnico)" }) }
   $resCtl = $Window.FindName('MantResumen')
   if ($resCtl) { $resCtl.ItemsSource = $pills }
   # Pendientes = manuales sin estado efectivo.
@@ -436,18 +436,18 @@ function Update-MantenimientoPanel {
   # Pills del resumen (del Resumen pre-calculado para el primer pintado).
   $pills = New-Object System.Collections.ArrayList
   $defs = @(
-    @{ k = 'Ok';          hex = '#43C961' }
-    @{ k = 'Advertencia'; hex = '#e0a93a' }
-    @{ k = 'Error';       hex = '#E07820' }
-    @{ k = 'Crítico';     hex = '#F05754' }
-    @{ k = 'N/A';         hex = '#6a8a7b' }
+    @{ k = 'Ok';          hex = '#5EAE87' }
+    @{ k = 'Advertencia'; hex = '#C79C53' }
+    @{ k = 'Error';       hex = '#C77539' }
+    @{ k = 'Crítico';     hex = '#DA6A72' }
+    @{ k = 'N/A';         hex = '#71837A' }
   )
   foreach ($d in $defs) {
     $n = [int]$Resumen[$d.k]
     if ($n -gt 0) { [void]$pills.Add([pscustomobject]@{ Color = $d.hex; Texto = "$n $($d.k)" }) }
   }
   if ([int]$Resumen.AMarcar -gt 0) {
-    [void]$pills.Add([pscustomobject]@{ Color = '#e0a93a'; Texto = "$([int]$Resumen.AMarcar) a marcar (técnico)" })
+    [void]$pills.Add([pscustomobject]@{ Color = '#C79C53'; Texto = "$([int]$Resumen.AMarcar) a marcar (técnico)" })
   }
   $resCtl = $Window.FindName('MantResumen')
   if ($resCtl) { $resCtl.ItemsSource = $pills }
@@ -485,23 +485,23 @@ function New-MantCatHeader {
 
   # Barra de acento.
   $bar = New-Object System.Windows.Controls.Border
-  $bar.Width = 3; $bar.Height = 13; $bar.CornerRadius = 2; $bar.Background = (New-MantBrush '#43C961')
+  $bar.Width = 3; $bar.Height = 13; $bar.CornerRadius = 2; $bar.Background = (New-MantBrush '#5EAE87')
   $bar.VerticalAlignment = 'Center'; $bar.Margin = '2,0,9,0'
   [System.Windows.Controls.Grid]::SetColumn($bar, 0)
   [void]$hdr.Children.Add($bar)
 
   $hcat = New-Object System.Windows.Controls.TextBlock
-  $hcat.Text = $Categoria.ToUpper(); $hcat.Foreground = (New-MantBrush '#6fb597'); $hcat.FontFamily = 'Space Grotesk, Segoe UI'
+  $hcat.Text = $Categoria.ToUpper(); $hcat.Foreground = (New-MantBrush '#7DA792'); $hcat.FontFamily = 'Space Grotesk, Segoe UI'
   $hcat.FontSize = 11; $hcat.FontWeight = 'Bold'; $hcat.VerticalAlignment = 'Center'
   [System.Windows.Controls.Grid]::SetColumn($hcat, 1)
   [void]$hdr.Children.Add($hcat)
 
   # Badge de conteo.
   $cnt = New-Object System.Windows.Controls.Border
-  $cnt.Background = (New-MantBrush '#11352a'); $cnt.BorderBrush = (New-MantBrush '#245040'); $cnt.BorderThickness = 1
+  $cnt.Background = (New-MantBrush '#182E23'); $cnt.BorderBrush = (New-MantBrush '#2D473A'); $cnt.BorderThickness = 1
   $cnt.CornerRadius = 9; $cnt.Padding = '8,1'; $cnt.VerticalAlignment = 'Center'
   $cntT = New-Object System.Windows.Controls.TextBlock
-  $cntT.Text = "$Count"; $cntT.Foreground = (New-MantBrush '#7fb89e'); $cntT.FontFamily = 'DM Mono, Consolas'; $cntT.FontSize = 9.5
+  $cntT.Text = "$Count"; $cntT.Foreground = (New-MantBrush '#8BAC9C'); $cntT.FontFamily = 'DM Mono, Consolas'; $cntT.FontSize = 9.5
   $cnt.Child = $cntT
   [System.Windows.Controls.Grid]::SetColumn($cnt, 2)
   [void]$hdr.Children.Add($cnt)
@@ -519,10 +519,10 @@ function New-MantFilaControl {
   $eff = Resolve-MantEstadoEfectivo $f
 
   $outer = New-Object System.Windows.Controls.Border
-  $outer.Background = (New-MantBrush '#13241c'); $outer.BorderThickness = '1,1,1,1'
+  $outer.Background = (New-MantBrush '#16211C'); $outer.BorderThickness = '1,1,1,1'
   $outer.CornerRadius = 8; $outer.Padding = '0'; $outer.Margin = '0,0,0,6'
   # Acento de borde izquierdo en el color del estado (semaforo). El resto del borde, sutil.
-  $outer.BorderBrush = (New-MantBrush '#243d31')
+  $outer.BorderBrush = (New-MantBrush '#293831')
 
   # Grid: barra de acento (col 0) + contenido (col 1).
   $shell = New-Object System.Windows.Controls.Grid
@@ -583,7 +583,7 @@ function New-MantFilaControl {
   $det = New-Object System.Windows.Controls.TextBlock
   $detTxt = if ($null -eq $eff -and -not $f.detalle) { 'Marcá el estado en el selector.' } elseif ($f.detalle) { $f.detalle } else { $eff }
   $det.Text = $detTxt; $det.FontFamily = 'DM Mono, Consolas'; $det.FontSize = 12.5
-  $det.Foreground = if ($null -eq $eff -and -not $f.detalle) { New-MantBrush '#7fa794' } else { New-MantBrush '#acd0bf' }
+  $det.Foreground = if ($null -eq $eff -and -not $f.detalle) { New-MantBrush '#879F93' } else { New-MantBrush '#B3C9BE' }
   $det.VerticalAlignment = 'Center'; $det.Margin = '0,0,12,0'; $det.TextTrimming = 'CharacterEllipsis'
   $det.ToolTip = $detTxt
   [System.Windows.Controls.Grid]::SetColumn($det, 2)
@@ -592,10 +592,10 @@ function New-MantFilaControl {
   # Tag de naturaleza (auto / técnico).
   $tag = New-Object System.Windows.Controls.Border
   $tag.CornerRadius = 8; $tag.Padding = '7,2'; $tag.VerticalAlignment = 'Center'; $tag.Margin = '0,0,8,0'
-  $tag.Background = if ($f.automated) { New-MantBrush '#16331f' } else { New-MantBrush '#33290f' }
+  $tag.Background = if ($f.automated) { New-MantBrush '#1C2D25' } else { New-MantBrush '#2E2414' }
   $tagT = New-Object System.Windows.Controls.TextBlock
   $tagT.Text = if ($f.automated) { 'auto' } else { 'técnico' }
-  $tagT.Foreground = if ($f.automated) { New-MantBrush '#5fd47f' } else { New-MantBrush '#e8b94f' }
+  $tagT.Foreground = if ($f.automated) { New-MantBrush '#77BC9A' } else { New-MantBrush '#D1AA66' }
   $tagT.FontFamily = 'Space Grotesk, Segoe UI'; $tagT.FontSize = 9.5; $tagT.FontWeight = 'SemiBold'
   $tag.Child = $tagT
   [System.Windows.Controls.Grid]::SetColumn($tag, 3)
@@ -645,21 +645,21 @@ function New-MantFilaControl {
   $accion = Get-MantAccion $f.name
   if ($accion) {
     $btn = New-Object System.Windows.Controls.Button
-    $btn.Content = $accion.etiqueta; $btn.Foreground = '#9fdcc0'; $btn.Background = '#16331f'
-    $btn.BorderBrush = '#2e5a47'; $btn.FontSize = 10.5; $btn.Padding = '9,4'; $btn.Margin = '0,0,4,0'
+    $btn.Content = $accion.etiqueta; $btn.Foreground = '#ABD0BE'; $btn.Background = '#1C2D25'
+    $btn.BorderBrush = '#375144'; $btn.FontSize = 10.5; $btn.Padding = '9,4'; $btn.Margin = '0,0,4,0'
     $btn.Cursor = 'Hand'; $btn.VerticalAlignment = 'Center'
     if ($accion.tipo -eq 'popover') {
       $pop = New-MantPopover -Anchor $btn -Titulo $accion.titulo -Raw $f.raw
       $btn.Add_Click({ param($s, $e) $pop.IsOpen = -not $pop.IsOpen }.GetNewClosure())
       # Borde verde cuando hay datos en raw.
-      if ($f.raw) { $btn.BorderBrush = '#43C961' }
+      if ($f.raw) { $btn.BorderBrush = '#5EAE87' }
     } elseif ($accion.tipo -eq 'popover_backup') {
       # FIX 2: "Ver logs" del backup MUESTRA el estado real (Cobian/Acronis) desde detalle+raw,
       # no abre el Explorador. El popover ofrece "Abrir carpeta" como accion secundaria.
       $pop = New-MantBackupPopover -Anchor $btn -Titulo $accion.titulo -Detalle ([string]$f.detalle) -Raw $f.raw
       $btn.Add_Click({ param($s, $e) $pop.IsOpen = -not $pop.IsOpen }.GetNewClosure())
       # Borde verde cuando hay datos de backup (detalle o raw).
-      if ($f.raw -or $f.detalle) { $btn.BorderBrush = '#43C961' }
+      if ($f.raw -or $f.detalle) { $btn.BorderBrush = '#5EAE87' }
     } else {
       $acc = $accion; $fila0 = $f
       $btn.Add_Click({
@@ -674,7 +674,7 @@ function New-MantFilaControl {
           } else {
             Start-Process $cmd
           }
-        } catch { [System.Windows.MessageBox]::Show("No se pudo abrir: $($_.Exception.Message)", 'STI') }
+        } catch { [System.Windows.MessageBox]::Show("No se pudo abrir: $($_.Exception.Message)", 'Fleet Toolkit') }
       }.GetNewClosure())
     }
     [System.Windows.Controls.Grid]::SetColumn($btn, 4)
@@ -686,17 +686,17 @@ function New-MantFilaControl {
   # ---- Observacion (spec 6.8): input ancho completo, resaltado verde cuando tiene contenido. ----
   $obs = New-Object System.Windows.Controls.TextBox
   $obs.Margin = '0,9,0,0'; $obs.FontSize = 11.5; $obs.FontFamily = 'Space Grotesk, Segoe UI'
-  $obs.Background = (New-MantBrush '#0c1c15'); $obs.Foreground = (New-MantBrush '#eaf2ec'); $obs.BorderThickness = 1
+  $obs.Background = (New-MantBrush '#0F1914'); $obs.Foreground = (New-MantBrush '#ECF0EE'); $obs.BorderThickness = 1
   $obs.Padding = '8,5'
   $obs.Text = [string]$f.observacion
-  $obs.BorderBrush = if ($f.observacion) { New-MantBrush '#43C961' } else { New-MantBrush '#1d3e31' }
+  $obs.BorderBrush = if ($f.observacion) { New-MantBrush '#5EAE87' } else { New-MantBrush '#24372E' }
   $obs.Tag = $f.name
   $obs.Add_TextChanged({
     param($s, $e)
     $filas = Get-MantPanelFilas -Window $Window
     Set-MantObservacion -Filas $filas -Name $s.Tag -Texto $s.Text | Out-Null
-    $s.BorderBrush = if ($s.Text) { New-Object System.Windows.Media.SolidColorBrush ([System.Windows.Media.ColorConverter]::ConvertFromString('#43C961')) }
-                     else { New-Object System.Windows.Media.SolidColorBrush ([System.Windows.Media.ColorConverter]::ConvertFromString('#1d3e31')) }
+    $s.BorderBrush = if ($s.Text) { New-Object System.Windows.Media.SolidColorBrush ([System.Windows.Media.ColorConverter]::ConvertFromString('#5EAE87')) }
+                     else { New-Object System.Windows.Media.SolidColorBrush ([System.Windows.Media.ColorConverter]::ConvertFromString('#24372E')) }
   }.GetNewClosure())
   [void]$stack.Children.Add($obs)
 
@@ -779,7 +779,7 @@ function New-MantBackupPopover {
   $pop.MaxWidth = 460
 
   $card = New-Object System.Windows.Controls.Border
-  $card.Background = '#0e1a15'; $card.BorderBrush = '#294a3b'; $card.BorderThickness = 1
+  $card.Background = '#101814'; $card.BorderBrush = '#30433A'; $card.BorderThickness = 1
   $card.CornerRadius = 8; $card.Padding = '10,8'
   $card.Effect = (New-Object System.Windows.Media.Effects.DropShadowEffect -Property @{ BlurRadius = 14; ShadowDepth = 2; Opacity = 0.5; Color = ([System.Windows.Media.ColorConverter]::ConvertFromString('#000000')) })
   $pop.Child = $card
@@ -788,7 +788,7 @@ function New-MantBackupPopover {
   $card.Child = $col
 
   $h = New-Object System.Windows.Controls.TextBlock
-  $h.Text = $Titulo; $h.Foreground = '#6fb597'; $h.FontFamily = 'Space Grotesk, Segoe UI'
+  $h.Text = $Titulo; $h.Foreground = '#7DA792'; $h.FontFamily = 'Space Grotesk, Segoe UI'
   $h.FontWeight = 'Bold'; $h.FontSize = 11; $h.Margin = '0,0,0,6'
   [void]$col.Children.Add($h)
 
@@ -800,13 +800,13 @@ function New-MantBackupPopover {
 
   if (-not @($info.lineas).Count) {
     $empty = New-Object System.Windows.Controls.TextBlock
-    $empty.Text = 'Sin datos de backup en el último relevamiento.'; $empty.Foreground = '#9cc3b2'; $empty.FontSize = 11
+    $empty.Text = 'Sin datos de backup en el último relevamiento.'; $empty.Foreground = '#A4BBB0'; $empty.FontSize = 11
     $empty.TextWrapping = 'Wrap'
     [void]$list.Children.Add($empty)
   } else {
     foreach ($ln in @($info.lineas)) {
       $r = New-Object System.Windows.Controls.TextBlock
-      $r.Text = [string]$ln; $r.Foreground = '#eaf2ec'; $r.FontFamily = 'DM Mono, Consolas'; $r.FontSize = 11
+      $r.Text = [string]$ln; $r.Foreground = '#ECF0EE'; $r.FontFamily = 'DM Mono, Consolas'; $r.FontSize = 11
       $r.Margin = '0,1,0,1'; $r.TextWrapping = 'Wrap'
       [void]$list.Children.Add($r)
     }
@@ -815,13 +815,13 @@ function New-MantBackupPopover {
   # Boton secundario "Abrir carpeta" solo si el raw trae una carpeta de logs valida.
   if ($info.logsDir) {
     $open = New-Object System.Windows.Controls.Button
-    $open.Content = 'Abrir carpeta'; $open.Foreground = '#9fdcc0'; $open.Background = '#16331f'
-    $open.BorderBrush = '#2e5a47'; $open.FontSize = 10; $open.Padding = '8,3'; $open.Margin = '0,8,0,0'
+    $open.Content = 'Abrir carpeta'; $open.Foreground = '#ABD0BE'; $open.Background = '#1C2D25'
+    $open.BorderBrush = '#375144'; $open.FontSize = 10; $open.Padding = '8,3'; $open.Margin = '0,8,0,0'
     $open.Cursor = 'Hand'; $open.HorizontalAlignment = 'Left'
     $dir0 = [string]$info.logsDir
     $open.Add_Click({
       param($s, $e)
-      try { Start-Process 'explorer.exe' $dir0 } catch { [System.Windows.MessageBox]::Show("No se pudo abrir: $($_.Exception.Message)", 'STI') }
+      try { Start-Process 'explorer.exe' $dir0 } catch { [System.Windows.MessageBox]::Show("No se pudo abrir: $($_.Exception.Message)", 'Fleet Toolkit') }
     }.GetNewClosure())
     [void]$col.Children.Add($open)
   }
@@ -842,7 +842,7 @@ function New-MantPopover {
   $pop.MaxWidth = 420
 
   $card = New-Object System.Windows.Controls.Border
-  $card.Background = '#0e1a15'; $card.BorderBrush = '#294a3b'; $card.BorderThickness = 1
+  $card.Background = '#101814'; $card.BorderBrush = '#30433A'; $card.BorderThickness = 1
   $card.CornerRadius = 8; $card.Padding = '10,8'
   $card.Effect = (New-Object System.Windows.Media.Effects.DropShadowEffect -Property @{ BlurRadius = 14; ShadowDepth = 2; Opacity = 0.5; Color = ([System.Windows.Media.ColorConverter]::ConvertFromString('#000000')) })
   $pop.Child = $card
@@ -852,7 +852,7 @@ function New-MantPopover {
 
   $h = New-Object System.Windows.Controls.TextBlock
   $items = @(ConvertTo-MantPopoverItems -Raw $Raw)
-  $h.Text = "$Titulo · $($items.Count)"; $h.Foreground = '#6fb597'; $h.FontFamily = 'Space Grotesk, Segoe UI'
+  $h.Text = "$Titulo · $($items.Count)"; $h.Foreground = '#7DA792'; $h.FontFamily = 'Space Grotesk, Segoe UI'
   $h.FontWeight = 'Bold'; $h.FontSize = 11; $h.Margin = '0,0,0,6'
   [void]$col.Children.Add($h)
 
@@ -864,12 +864,12 @@ function New-MantPopover {
 
   if (-not $items.Count) {
     $empty = New-Object System.Windows.Controls.TextBlock
-    $empty.Text = 'Sin datos relevados.'; $empty.Foreground = '#9cc3b2'; $empty.FontSize = 11
+    $empty.Text = 'Sin datos relevados.'; $empty.Foreground = '#A4BBB0'; $empty.FontSize = 11
     [void]$list.Children.Add($empty)
   } else {
     foreach ($it in $items) {
       $r = New-Object System.Windows.Controls.TextBlock
-      $r.Text = $it; $r.Foreground = '#eaf2ec'; $r.FontFamily = 'DM Mono, Consolas'; $r.FontSize = 11
+      $r.Text = $it; $r.Foreground = '#ECF0EE'; $r.FontFamily = 'DM Mono, Consolas'; $r.FontSize = 11
       $r.Margin = '0,1,0,1'; $r.TextWrapping = 'Wrap'
       [void]$list.Children.Add($r)
     }

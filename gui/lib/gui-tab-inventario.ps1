@@ -45,12 +45,12 @@ function Get-InvFechaRel {
 function Get-InvSemBrush {
   param([string]$Estado)
   switch ($Estado) {
-    'Ok'          { 'StiVerde' }
-    'Advertencia' { 'StiAmbar' }
-    'Error'       { 'StiNaranja' }
-    'Critico'     { 'StiRojo' }
-    'Crítico'     { 'StiRojo' }
-    default       { 'StiNa' }
+    'Ok'          { 'AppAccent' }
+    'Advertencia' { 'AppAmbar' }
+    'Error'       { 'AppNaranja' }
+    'Critico'     { 'AppRojo' }
+    'Crítico'     { 'AppRojo' }
+    default       { 'AppNa' }
   }
 }
 
@@ -314,18 +314,18 @@ function New-PanelInventarioXaml {
 @'
       <ScrollViewer x:Name="PanelInventario" Visibility="Collapsed" VerticalScrollBarVisibility="Auto">
         <StackPanel>
-          <TextBlock x:Name="InvVacio" Style="{StaticResource StiSecHeader}" Foreground="{StaticResource StiTexto2}" Text="Relevá el equipo (pestaña Principal) para ver el inventario."/>
-          <TextBlock Style="{StaticResource StiGrupoHeader}" Text="SISTEMA OPERATIVO"/>
+          <TextBlock x:Name="InvVacio" Style="{StaticResource AppSecHeader}" Foreground="{StaticResource AppTexto2}" Text="Relevá el equipo (pestaña Principal) para ver el inventario."/>
+          <TextBlock Style="{StaticResource AppGrupoHeader}" Text="SISTEMA OPERATIVO"/>
           <StackPanel x:Name="InvSistemaHost"/>
-          <TextBlock Style="{StaticResource StiGrupoHeader}" Text="PROCESADOR"/>
+          <TextBlock Style="{StaticResource AppGrupoHeader}" Text="PROCESADOR"/>
           <StackPanel x:Name="InvCpuHost"/>
-          <TextBlock Style="{StaticResource StiGrupoHeader}" Text="MEMORIA RAM"/>
+          <TextBlock Style="{StaticResource AppGrupoHeader}" Text="MEMORIA RAM"/>
           <StackPanel x:Name="InvRamHost"/>
-          <TextBlock x:Name="InvDiscosTitulo" Style="{StaticResource StiGrupoHeader}" Text="DISCOS"/>
+          <TextBlock x:Name="InvDiscosTitulo" Style="{StaticResource AppGrupoHeader}" Text="DISCOS"/>
           <StackPanel x:Name="InvDiscosHost"/>
-          <TextBlock Style="{StaticResource StiGrupoHeader}" Text="MOTHERBOARD / FIRMWARE"/>
+          <TextBlock Style="{StaticResource AppGrupoHeader}" Text="MOTHERBOARD / FIRMWARE"/>
           <StackPanel x:Name="InvMboardHost"/>
-          <TextBlock Style="{StaticResource StiGrupoHeader}" Text="RED"/>
+          <TextBlock Style="{StaticResource AppGrupoHeader}" Text="RED"/>
           <StackPanel x:Name="InvRedHost"/>
         </StackPanel>
       </ScrollViewer>
@@ -353,12 +353,12 @@ function New-InvKvRow {
   $g.ColumnDefinitions.Add($c1); $g.ColumnDefinitions.Add($c2)
   $lbl = New-Object System.Windows.Controls.TextBlock
   $lbl.Text = $Kv.k; $lbl.FontFamily = 'Space Grotesk, Segoe UI'; $lbl.FontSize = 11
-  $lbl.Foreground = $Window.FindResource('StiTexto2'); $lbl.Margin = '0,0,12,0'
+  $lbl.Foreground = $Window.FindResource('AppTexto2'); $lbl.Margin = '0,0,12,0'
   $val = New-Object System.Windows.Controls.TextBlock
   $val.Text = $Kv.v; $val.FontFamily = 'DM Mono, Consolas'; $val.FontSize = 11
   $val.HorizontalAlignment = 'Right'; $val.TextWrapping = 'Wrap'; $val.TextAlignment = 'Right'
   $tonoBrush = switch ($Kv.tono) {
-    'good' { 'StiVerde' } 'warn' { 'StiAmbar' } 'bad' { 'StiRojo' } default { 'StiTexto' }
+    'good' { 'AppAccent' } 'warn' { 'AppAmbar' } 'bad' { 'AppRojo' } default { 'AppTexto' }
   }
   $val.Foreground = $Window.FindResource($tonoBrush)
   [System.Windows.Controls.Grid]::SetColumn($lbl, 0)
@@ -374,7 +374,7 @@ function New-InvCol {
   $sp.Margin = '0,0,0,0'
   $h = New-Object System.Windows.Controls.TextBlock
   $h.Text = $Col.titulo; $h.FontFamily = 'Space Grotesk, Segoe UI'; $h.FontSize = 10
-  $h.FontWeight = 'Bold'; $h.Foreground = $Window.FindResource('StiTenue'); $h.Margin = '0,0,0,6'
+  $h.FontWeight = 'Bold'; $h.Foreground = $Window.FindResource('AppTenue'); $h.Margin = '0,0,0,6'
   [void]$sp.Children.Add($h)
   foreach ($kv in $Col.kv) { [void]$sp.Children.Add((New-InvKvRow -Window $Window -Kv $kv)) }
   $sp
@@ -385,7 +385,7 @@ function New-InvCardControl {
   param($Window, $Card, [bool]$Expandido = $false)
   $exp = New-Object System.Windows.Controls.Expander
   $exp.IsExpanded = $Expandido
-  if ($Window.Resources.Contains('StiCardExpander')) { $exp.Style = $Window.FindResource('StiCardExpander') }
+  if ($Window.Resources.Contains('AppCardExpander')) { $exp.Style = $Window.FindResource('AppCardExpander') }
   $exp.Margin = '0,0,0,10'
 
   # Header
@@ -396,10 +396,10 @@ function New-InvCardControl {
   $tit = New-Object System.Windows.Controls.StackPanel
   $t1 = New-Object System.Windows.Controls.TextBlock
   $t1.Text = $Card.titulo; $t1.FontFamily = 'Space Grotesk, Segoe UI'; $t1.FontSize = 14
-  $t1.FontWeight = 'SemiBold'; $t1.Foreground = $Window.FindResource('StiTexto')
+  $t1.FontWeight = 'SemiBold'; $t1.Foreground = $Window.FindResource('AppTexto')
   $t2 = New-Object System.Windows.Controls.TextBlock
   $t2.Text = $Card.subtitulo; $t2.FontFamily = 'Space Grotesk, Segoe UI'; $t2.FontSize = 11
-  $t2.Foreground = $Window.FindResource('StiTexto2')
+  $t2.Foreground = $Window.FindResource('AppTexto2')
   [void]$tit.Children.Add($t1); [void]$tit.Children.Add($t2)
   $estPanel = New-Object System.Windows.Controls.StackPanel
   $estPanel.Orientation = 'Horizontal'; $estPanel.VerticalAlignment = 'Center'
@@ -432,13 +432,13 @@ function New-InvCardControl {
   if ($Card.Contains('modulos') -and @($Card.modulos).Count) {
     $mh = New-Object System.Windows.Controls.TextBlock
     $mh.Text = 'Módulos por slot'; $mh.FontFamily = 'Space Grotesk, Segoe UI'; $mh.FontSize = 10
-    $mh.FontWeight = 'Bold'; $mh.Foreground = $Window.FindResource('StiTenue'); $mh.Margin = '0,10,0,6'
+    $mh.FontWeight = 'Bold'; $mh.Foreground = $Window.FindResource('AppTenue'); $mh.Margin = '0,10,0,6'
     [void]$body.Children.Add($mh)
     foreach ($m in $Card.modulos) {
       $row = New-Object System.Windows.Controls.TextBlock
       $row.Text = ("{0}  ·  {1}  ·  {2}  ·  {3}" -f $m.slot, $m.gb, $m.mhz, $m.fabricante)
       $row.FontFamily = 'DM Mono, Consolas'; $row.FontSize = 11
-      $row.Foreground = $Window.FindResource('StiTexto'); $row.Margin = '0,0,0,3'
+      $row.Foreground = $Window.FindResource('AppTexto'); $row.Margin = '0,0,0,3'
       [void]$body.Children.Add($row)
     }
   }

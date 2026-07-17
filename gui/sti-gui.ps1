@@ -29,8 +29,8 @@ Add-Type -AssemblyName PresentationFramework, PresentationCore, WindowsBase
 Add-Type -AssemblyName System.Windows.Forms  # FolderBrowserDialog
 
 $hostName = $env:COMPUTERNAME
-$xaml = New-StiWindowXaml -Hostname $hostName -Version $SCRIPT_VERSION
-$win  = Get-StiWindow -Xaml $xaml
+$xaml = New-AppWindowXaml -Hostname $hostName -Version $SCRIPT_VERSION
+$win  = Get-AppWindow -Xaml $xaml
 $ctl  = {param($n) $win.FindName($n)}
 
 $ff  = Get-FormFactor
@@ -153,7 +153,7 @@ function Start-InventarioCarga {
 
 (& $ctl 'BtnRelevar').Add_Click({
   $val = Test-IdentificacionValida -Tag (& $ctl 'TxtTag').Text -Cliente (& $ctl 'TxtCliente').Text
-  if (-not $val.ok) { [System.Windows.MessageBox]::Show($val.mensaje, 'STI'); return }
+  if (-not $val.ok) { [System.Windows.MessageBox]::Show($val.mensaje, 'Fleet Toolkit'); return }
 
   $coreDir = (Resolve-Path (Join-Path $scriptDir '..')).Path
   # NO usar $args: es variable automatica de PowerShell (array de argumentos). Usar $mantArgs.
@@ -220,7 +220,7 @@ function Start-InventarioCarga {
 # la planilla se construye al final, en la tab Generar, cuando estan todos los JSON de todos los equipos.
 (& $ctl 'BtnGenerarMant').Add_Click({
   $filas = Get-MantPanelFilas -Window $win
-  if (-not $filas) { [System.Windows.MessageBox]::Show('Relevá el equipo antes de generar el JSON.', 'STI'); return }
+  if (-not $filas) { [System.Windows.MessageBox]::Show('Relevá el equipo antes de generar el JSON.', 'Fleet Toolkit'); return }
   $tipoMant = Get-MantPanelTipo -Window $win
 
   # Ctx para el JSON: identificacion + os/formFactor + hardwareIds del ultimo relevamiento (si hubo).
@@ -233,7 +233,7 @@ function Start-InventarioCarga {
   # Avisar (no bloquear) si quedan manuales sin marcar.
   $pend = @($filas | Where-Object { (-not $_.automated) -and ($null -eq (Resolve-MantEstadoEfectivo $_)) }).Count
   if ($pend -gt 0) {
-    $resp = [System.Windows.MessageBox]::Show("Quedan $pend checks manuales sin marcar. ¿Generar igual?", 'STI', 'YesNo', 'Warning')
+    $resp = [System.Windows.MessageBox]::Show("Quedan $pend checks manuales sin marcar. ¿Generar igual?", 'Fleet Toolkit', 'YesNo', 'Warning')
     if ($resp -ne 'Yes') { return }
   }
 
@@ -241,24 +241,24 @@ function Start-InventarioCarga {
   $dir = Get-MantDir -Path (& $ctl 'TxtSalida').Text
   $hostOut = if ($obj.meta.hostname) { $obj.meta.hostname } else { $env:COMPUTERNAME }
   $stamp = Get-Date -Format 'yyyyMMdd'
-  $out = Join-Path $dir "${hostOut}_STI_MANT_${tipoMant}_${stamp}.json"
+  $out = Join-Path $dir "${hostOut}_FLEET_MANT_${tipoMant}_${stamp}.json"
   ($obj | ConvertTo-Json -Depth 8) | Out-File -FilePath $out -Encoding UTF8
-  [System.Windows.MessageBox]::Show("JSON generado: $out", 'STI')
+  [System.Windows.MessageBox]::Show("JSON generado: $out", 'Fleet Toolkit')
 })
 
-(& $ctl 'BtnInstalarOcs').Add_Click({ [System.Windows.MessageBox]::Show('Instalar OCS requiere red. Disponible en una fase siguiente.', 'STI') })
-(& $ctl 'BtnInforme').Add_Click({ [System.Windows.MessageBox]::Show('Informe local: disponible en una fase siguiente.', 'STI') })
+(& $ctl 'BtnInstalarOcs').Add_Click({ [System.Windows.MessageBox]::Show('Instalar OCS requiere red. Disponible en una fase siguiente.', 'Fleet Toolkit') })
+(& $ctl 'BtnInforme').Add_Click({ [System.Windows.MessageBox]::Show('Informe local: disponible en una fase siguiente.', 'Fleet Toolkit') })
 
 # Tab Utilidades: detectar el estado REAL (read-only: registro/servicios/appx) y poblar el catalogo.
-# Los detectores no mutan nada (Get-StiUtilDeteccionReal/Get-StiUtilListadosReal). Las acciones que
-# mutan el equipo se despachan (Invoke-StiUtilBatch: checkpoint best-effort + auditoria) solo ante
+# Los detectores no mutan nada (Get-UtilDeteccionReal/Get-UtilListadosReal). Las acciones que
+# mutan el equipo se despachan (Invoke-UtilBatch: checkpoint best-effort + auditoria) solo ante
 # "Aplicar cambios", con aviso previo.
 #
 # UX: el scan corre EN EL HILO UI (no en un runspace). Los 38 detectores son lecturas rapidas de
 # registro/servicios/appx (~1-2s); no justifican un runspace async, que ademas rompia el puente del
 # scan: al cruzar el runspace los hashtables anidados volvian como PSCustomObject sin .ContainsKey, asi
-# que Resolve-StiUtilEstado caia a 'disponible' (toggle OFF) para todo y el toggle nunca reflejaba el
-# estado real. Corriendo Get-StiUtilDeteccionReal/Get-StiUtilListadosReal en el hilo UI (con la barra de
+# que Resolve-UtilEstado caia a 'disponible' (toggle OFF) para todo y el toggle nunca reflejaba el
+# estado real. Corriendo Get-UtilDeteccionReal/Get-UtilListadosReal en el hilo UI (con la barra de
 # progreso breve ya existente) el detector probado funciona tal cual y los toggles arrancan en el estado
 # REAL del equipo. El apply de acciones SI sigue async (streaming), que es donde el async aporta.
 # Al volver: repuebla los toggles con el estado REAL detectado (sin etiqueta "Aplicada/Revertida": el
@@ -266,8 +266,8 @@ function Start-InventarioCarga {
 # El refresco del log se hace en cada apertura de tab, tras cada apply/undo y con el boton Refrescar.
 
 # Refresca el panel de log interno leyendo el JSON-lines de auditoria (no bloquea: es lectura local).
-function Update-StiUtilLog {
-  try { Update-StiUtilLogPanel -Window $win -Count 25 } catch {}
+function Update-UtilLog {
+  try { Update-UtilLogPanel -Window $win -Count 25 } catch {}
 }
 
 $utilScan = {
@@ -277,67 +277,67 @@ $utilScan = {
   # Forzar a pintar el "Escaneando..." y la barra antes de la lectura sincrona (sin congelar visualmente).
   try { $win.Dispatcher.Invoke([Action]{}, [System.Windows.Threading.DispatcherPriority]::Render) } catch {}
   # Lectura read-only directa en el hilo UI: los detectores ya probados devuelven hashtables con
-  # .ContainsKey utilizables por Resolve-StiUtilEstado (toggle ON = feature presente). Tolerante a fallo.
+  # .ContainsKey utilizables por Resolve-UtilEstado (toggle ON = feature presente). Tolerante a fallo.
   $estados = @{}; $scanErr = $null
-  try { $estados = Get-StiUtilDeteccionReal } catch { $scanErr = $_.Exception.Message }
-  $listados = @{}; try { $listados = Get-StiUtilListadosReal } catch {}
+  try { $estados = Get-UtilDeteccionReal } catch { $scanErr = $_.Exception.Message }
+  $listados = @{}; try { $listados = Get-UtilListadosReal } catch {}
   if (-not $estados) { $estados = @{} }
   if (-not $listados) { $listados = @{} }
   # Sin badges en la card: el toggle muestra el estado REAL y el historial vive en el panel de log.
   Update-UtilidadesPanel -Window $win -Estados $estados -Listados $listados
   $aplic = @($estados.Values | Where-Object { $_.estado -eq 'aplicado' }).Count
   $scanRes = if ($scanErr) { "error: $scanErr" } else { 'ok' }
-  try { Write-StiAudit -Accion 'scan' -Resultado $scanRes -Mensaje "escaneo de utilidades · $aplic features activas" -Tecnico (& $ctl 'TxtTecnico').Text | Out-Null } catch {}
-  Update-StiUtilLog
+  try { Write-Audit -Accion 'scan' -Resultado $scanRes -Mensaje "escaneo de utilidades · $aplic features activas" -Tecnico (& $ctl 'TxtTecnico').Text | Out-Null } catch {}
+  Update-UtilLog
   $prog = (& $ctl 'ProgUtil')
   if ($prog) { $prog.IsIndeterminate = $false; $prog.Visibility = 'Collapsed' }
 }
 # Config de la tab (FIX 2): ScriptDir para los runspaces de streaming de "Aplicar" + el re-escaneo a
 # correr al terminar cada accion (refresca toggles al estado real + log). La leen los botones "Aplicar" de las
-# acciones via Invoke-StiUtilAccionDesdeClick.
-Set-StiUtilCfg -Window $win -ScriptDir $scriptDir -OnRescan ([scriptblock]{ & $utilScan }.GetNewClosure())
+# acciones via Invoke-UtilAccionDesdeClick.
+Set-UtilCfg -Window $win -ScriptDir $scriptDir -OnRescan ([scriptblock]{ & $utilScan }.GetNewClosure())
 # Scan AL ABRIR la tab Utilidades (la primera vez y en cada re-entrada): el toggle siempre refleja el
 # estado real detectado, no un click recordado. Tambien se corre una vez al iniciar para precalentar.
 (& $ctl 'ChipUtilidades').Add_Checked([System.Windows.RoutedEventHandler]{ & $utilScan }.GetNewClosure())
 (& $ctl 'BtnUtilReescanear').Add_Click($utilScan)
-Update-StiUtilLog
-(& $ctl 'BtnUtilLogRefrescar').Add_Click({ Update-StiUtilLog })
+Update-UtilLog
+(& $ctl 'BtnUtilLogRefrescar').Add_Click({ Update-UtilLog })
 (& $ctl 'BtnUtilLogAbrir').Add_Click({
-  try { $d = Get-StiAuditDir; if (-not (Test-Path $d)) { Initialize-StiAuditStore | Out-Null }; Start-Process explorer.exe $d } catch {}
+  try { $d = Get-AuditDir; if (-not (Test-Path $d)) { Initialize-AuditStore | Out-Null }; Start-Process explorer.exe $d } catch {}
 })
-# Preset STI: marca los ids del preset como pendientes (no aplica nada; el tecnico confirma).
+# Preset recomendado: marca los ids del preset como pendientes (no aplica nada; el tecnico confirma).
 (& $ctl 'BtnUtilPreset').Add_Click({
-  $p = Get-StiUtilPendientes -Window $win
-  foreach ($id in (Get-StiUtilPreset)) { $p[$id] = 'aplicar' }
-  Update-StiUtilPendientesUI -Window $win
-  [System.Windows.MessageBox]::Show('Preset STI marcado. Revisá y confirmá con "Aplicar cambios".', 'STI')
+  $p = Get-UtilPendientes -Window $win
+  foreach ($id in (Get-UtilPreset)) { $p[$id] = 'aplicar' }
+  Update-UtilPendientesUI -Window $win
+  [System.Windows.MessageBox]::Show('Preset recomendado marcado. Revisá y confirmá con "Aplicar cambios".', 'Fleet Toolkit')
 })
 # Aplicar cambios: ejecuta el batch de pendientes sobre el equipo (muta) con red de seguridad
-# (Invoke-StiUtilBatch: punto de restauracion best-effort + auditoria por accion). Confirmacion
+# (Invoke-UtilBatch: punto de restauracion best-effort + auditoria por accion). Confirmacion
 # explicita. Tras aplicar, & $utilScan re-escanea (refresca toggles al estado real y panel de log).
 (& $ctl 'BtnUtilAplicar').Add_Click({
-  $p = Get-StiUtilPendientes -Window $win
+  $p = Get-UtilPendientes -Window $win
   $n = @($p.Keys).Count
-  if ($n -eq 0) { [System.Windows.MessageBox]::Show('No hay cambios marcados.', 'STI'); return }
-  $resp = [System.Windows.MessageBox]::Show("Se aplicarán $n cambios sobre este equipo. Se intentará un punto de restauración y se registrará todo en $(Get-StiUtilLogPath). ¿Continuar?", 'STI', 'YesNo', 'Warning')
+  if ($n -eq 0) { [System.Windows.MessageBox]::Show('No hay cambios marcados.', 'Fleet Toolkit'); return }
+  $resp = [System.Windows.MessageBox]::Show("Se aplicarán $n cambios sobre este equipo. Se intentará un punto de restauración y se registrará todo en $(Get-UtilLogPath). ¿Continuar?", 'Fleet Toolkit', 'YesNo', 'Warning')
   if ($resp -ne 'Yes') { return }
-  $batch = Invoke-StiUtilBatch -Pendientes $p
+  $batch = Invoke-UtilBatch -Pendientes $p
   $p.Clear()
   & $utilScan
   $cp = if ($batch.persistente) { if ($batch.checkpoint) { 'Punto de restauración creado.' } else { 'Punto de restauración no disponible (server o System Restore off).' } } else { 'Sin punto de restauración (solo limpieza/reparaciones).' }
-  [System.Windows.MessageBox]::Show("Cambios aplicados. $cp Log: $(Get-StiUtilLogPath). Estado re-escaneado.", 'STI')
+  [System.Windows.MessageBox]::Show("Cambios aplicados. $cp Log: $(Get-UtilLogPath). Estado re-escaneado.", 'Fleet Toolkit')
 })
 # Revertir aplicadas: marca como 'revertir' las features reversibles hoy activas.
 (& $ctl 'BtnUtilRevertir').Add_Click({
-  $estados = @{}; try { $estados = Get-StiUtilDeteccionReal } catch {}
-  $p = Get-StiUtilPendientes -Window $win
-  foreach ($item in (Get-StiUtilCatalogo)) {
+  $estados = @{}; try { $estados = Get-UtilDeteccionReal } catch {}
+  $p = Get-UtilPendientes -Window $win
+  foreach ($item in (Get-UtilCatalogo)) {
     if ($item.reversible -and $estados.ContainsKey($item.id) -and $estados[$item.id].estado -eq 'aplicado') {
       $p[$item.id] = 'revertir'
     }
   }
-  Update-StiUtilPendientesUI -Window $win
-  [System.Windows.MessageBox]::Show('Reversiones marcadas. Confirmá con "Aplicar cambios".', 'STI')
+  Update-UtilPendientesUI -Window $win
+  [System.Windows.MessageBox]::Show('Reversiones marcadas. Confirmá con "Aplicar cambios".', 'Fleet Toolkit')
 })
 
 # ---- Tab Generar (consolidacion local de JSONs) ----
@@ -358,18 +358,18 @@ foreach ($c in @('ChipGenTerm','ChipGenSrv','ChipGenBoth')) {
 }
 (& $ctl 'BtnGenPlanilla').Add_Click({
   $carpeta = (& $ctl 'TxtGenCarpeta').Text
-  if (-not $script:genItems -or @($script:genItems).Count -eq 0) { [System.Windows.MessageBox]::Show('Elegí una carpeta con JSONs primero.', 'STI'); return }
+  if (-not $script:genItems -or @($script:genItems).Count -eq 0) { [System.Windows.MessageBox]::Show('Elegí una carpeta con JSONs primero.', 'Fleet Toolkit'); return }
   $seg = Get-GenerarSegFromWindow -Window $win
   $html = New-PlanillaHtml -Items $script:genItems -Cliente (& $ctl 'TxtGenCliente').Text -Periodo (& $ctl 'TxtGenPeriodo').Text -Seg $seg
-  $out = Save-GenerarHtml -Html $html -Carpeta $carpeta -Nombre ('STI_Planilla_{0}.html' -f (Get-Date -Format 'yyyyMMdd_HHmmss'))
+  $out = Save-GenerarHtml -Html $html -Carpeta $carpeta -Nombre ('Planilla_{0}.html' -f (Get-Date -Format 'yyyyMMdd_HHmmss'))
   Start-Process $out
 })
 (& $ctl 'BtnGenInforme').Add_Click({
   $carpeta = (& $ctl 'TxtGenCarpeta').Text
-  if (-not $script:genItems -or @($script:genItems).Count -eq 0) { [System.Windows.MessageBox]::Show('Elegí una carpeta con JSONs primero.', 'STI'); return }
+  if (-not $script:genItems -or @($script:genItems).Count -eq 0) { [System.Windows.MessageBox]::Show('Elegí una carpeta con JSONs primero.', 'Fleet Toolkit'); return }
   $seg = Get-GenerarSegFromWindow -Window $win
   $html = New-InformeLocalHtml -Items $script:genItems -Cliente (& $ctl 'TxtGenCliente').Text -Periodo (& $ctl 'TxtGenPeriodo').Text -Seg $seg
-  $out = Save-GenerarHtml -Html $html -Carpeta $carpeta -Nombre ('STI_Informe_local_{0}.html' -f (Get-Date -Format 'yyyyMMdd_HHmmss'))
+  $out = Save-GenerarHtml -Html $html -Carpeta $carpeta -Nombre ('Informe_local_{0}.html' -f (Get-Date -Format 'yyyyMMdd_HHmmss'))
   Start-Process $out
 })
 

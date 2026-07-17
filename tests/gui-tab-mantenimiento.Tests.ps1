@@ -11,7 +11,7 @@ BeforeAll {
 
   # Fixture: items de relevamiento (forma de New-CheckItem), sin CIM.
   $script:itemsFixture = @(
-    @{ key = 'chk_cuentas_sti';   label = 'Cuentas STI (admin)'; status = 'Ok';          automated = $true;  detail = 'cuentas admin OK'; rawData = $null }
+    @{ key = 'chk_cuentas_admin';   label = 'Cuentas admin (gestionadas)'; status = 'Ok';          automated = $true;  detail = 'cuentas admin OK'; rawData = $null }
     @{ key = 'chk_firewall';      label = 'Firewall';            status = 'Ok';          automated = $true;  detail = '3 perfiles';    rawData = $null }
     @{ key = 'chk_disco_smart';   label = 'Estado disco (SMART)';status = 'Error';       automated = $true;  detail = '37 reallocated';rawData = $null }
     @{ key = 'chk_updates';       label = 'Updates Windows';     status = 'Advertencia'; automated = $true;  detail = 'KB 22 dias';    rawData = $null }
@@ -28,9 +28,9 @@ Describe "Get-MantCheckCatalog" {
   It "servidor tiene 19 checks" {
     (Get-MantCheckCatalog -Tipo 'servidores').Count | Should -Be 19
   }
-  It "el orden del terminal arranca por cuentas_sti y termina en limpieza_temp (orden de rowColumns)" {
+  It "el orden del terminal arranca por cuentas_admin y termina en limpieza_temp (orden de rowColumns)" {
     $c = Get-MantCheckCatalog -Tipo 'terminales'
-    $c[0].name  | Should -Be 'chk_cuentas_sti'
+    $c[0].name  | Should -Be 'chk_cuentas_admin'
     $c[-1].name | Should -Be 'chk_limpieza_temp'
   }
   It "terminal tiene 18 AUTO y 8 MANUAL" {
@@ -87,7 +87,7 @@ Describe "Get-MantResumen" {
   It "cuenta por estado y los manuales sin estado como AMarcar" {
     $filas = ConvertTo-MantFilas -Catalogo (Get-MantCheckCatalog -Tipo 'terminales') -Items $script:itemsFixture
     $r = Get-MantResumen -Filas $filas
-    $r.Ok          | Should -Be 2   # cuentas_sti + firewall
+    $r.Ok          | Should -Be 2   # cuentas_admin + firewall
     $r.Advertencia | Should -Be 1   # updates
     $r.Error       | Should -Be 1   # smart
     # bateria N/A + los AUTO sin item (cada uno N/A); AMarcar = 8 manuales (ninguno marcado)
@@ -104,23 +104,23 @@ Describe "Get-MantPendientes" {
 
 Describe "Get-SemBrushKey y Get-SemHex" {
   It "mapea cada estado a su brush del theme" {
-    Get-SemBrushKey 'Ok'          | Should -Be 'StiVerde'
-    Get-SemBrushKey 'Advertencia' | Should -Be 'StiAmbar'
-    Get-SemBrushKey 'Error'       | Should -Be 'StiNaranja'
-    Get-SemBrushKey 'Crítico'     | Should -Be 'StiRojo'
-    Get-SemBrushKey 'N/A'         | Should -Be 'StiNa'
-    Get-SemBrushKey 'loquesea'    | Should -Be 'StiNa'
+    Get-SemBrushKey 'Ok'          | Should -Be 'AppAccent'
+    Get-SemBrushKey 'Advertencia' | Should -Be 'AppAmbar'
+    Get-SemBrushKey 'Error'       | Should -Be 'AppNaranja'
+    Get-SemBrushKey 'Crítico'     | Should -Be 'AppRojo'
+    Get-SemBrushKey 'N/A'         | Should -Be 'AppNa'
+    Get-SemBrushKey 'loquesea'    | Should -Be 'AppNa'
   }
-  It "el hex de Ok es el verde STI #43C961" {
-    Get-SemHex 'Ok' | Should -Be '#43C961'
+  It "el hex de Ok es el verde de marca #5EAE87" {
+    Get-SemHex 'Ok' | Should -Be '#5EAE87'
   }
 }
 
 Describe "Badge de estado de la card (Get-SemBadgeBg / Get-SemBadgeLabel)" {
   It "el badge bg es un tinte oscuro por estado, no el hex pleno" {
-    Get-SemBadgeBg 'Ok' | Should -Be '#16331f'
+    Get-SemBadgeBg 'Ok' | Should -Be '#1C2D25'
     Get-SemBadgeBg 'Ok' | Should -Not -Be (Get-SemHex 'Ok')
-    Get-SemBadgeBg 'loquesea' | Should -Be '#1c2a24'
+    Get-SemBadgeBg 'loquesea' | Should -Be '#1F2723'
   }
   It "no usa verdes ajenos al branding (#22c55e / #10b981)" {
     foreach ($e in @('Ok','Advertencia','Error','Crítico','N/A')) {
@@ -150,7 +150,7 @@ Describe "New-PanelMantenimientoXaml" {
     $x | Should -Match ([regex]::Escape('x:Key="MantPillBorder"'))
     $x | Should -Match ([regex]::Escape('x:Key="MantPillText"'))
   }
-  It "no usa verdes ajenos al branding STI" {
+  It "no usa verdes ajenos al branding" {
     $x = New-PanelMantenimientoXaml
     $x | Should -Not -Match '22c55e'
     $x | Should -Not -Match '10b981'
@@ -339,7 +339,7 @@ Describe "Carga WPF de la ventana con el panel Mantenimiento" {
   try { Add-Type -AssemblyName PresentationFramework, PresentationCore, WindowsBase -ErrorAction Stop; $script:wpfOk = $true } catch {}
 
   It "XamlReader.Load instancia la ventana y encuentra los x:Name del panel" -Skip:(-not $script:wpfOk) {
-    $xaml = New-StiWindowXaml -Hostname 'CLAUDE' -Version '1.0'
+    $xaml = New-AppWindowXaml -Hostname 'CLAUDE' -Version '1.0'
     $rs = [runspacefactory]::CreateRunspace(); $rs.ApartmentState = 'STA'; $rs.Open()
     $ps = [powershell]::Create(); $ps.Runspace = $rs
     [void]$ps.AddScript({
@@ -358,7 +358,7 @@ Describe "Carga WPF de la ventana con el panel Mantenimiento" {
   }
 
   It "Update-MantenimientoPanel puebla headers de categoria + cards de check sin error" -Skip:(-not $script:wpfOk) {
-    $xaml = New-StiWindowXaml -Hostname 'CLAUDE' -Version '1.0'
+    $xaml = New-AppWindowXaml -Hostname 'CLAUDE' -Version '1.0'
     $rs = [runspacefactory]::CreateRunspace(); $rs.ApartmentState = 'STA'; $rs.Open()
     $ps = [powershell]::Create(); $ps.Runspace = $rs
     [void]$ps.AddScript({
@@ -388,7 +388,7 @@ Describe "Carga WPF de la ventana con el panel Mantenimiento" {
   }
 
   It "el boton de Mantenimiento dice 'Generar JSON del equipo' (no genera planilla)" -Skip:(-not $script:wpfOk) {
-    $xaml = New-StiWindowXaml -Hostname 'CLAUDE' -Version '1.0'
+    $xaml = New-AppWindowXaml -Hostname 'CLAUDE' -Version '1.0'
     $rs = [runspacefactory]::CreateRunspace(); $rs.ApartmentState = 'STA'; $rs.Open()
     $ps = [powershell]::Create(); $ps.Runspace = $rs
     [void]$ps.AddScript({

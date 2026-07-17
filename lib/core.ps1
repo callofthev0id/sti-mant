@@ -1,12 +1,12 @@
 ﻿# lib/core.ps1 - nucleo reutilizable de relevamiento (contexto + orquestacion de modulos).
 # Lo comparten el entry CLI (sti-mant.ps1) y la GUI (gui/sti-gui.ps1). NO ejecuta nada al cargar:
 # solo define $MOD_FNS, New-MantContext e Invoke-Relevamiento. Depende de common.ps1 (Get-OsInfo,
-# Get-FormFactor, Get-HardwareIds, $STI_CUENTAS_ADMIN) y runspace.ps1 (Invoke-ModulesParallel).
+# Get-FormFactor, Get-HardwareIds, $FLEET_CUENTAS_ADMIN) y runspace.ps1 (Invoke-ModulesParallel).
 
 # Funciones de modulo por tipo.
 $script:MOD_FNS = @{
-  terminales = @('Invoke-STIModSeguridad','Invoke-STIModSistema','Invoke-STIModHardware','Invoke-STIModRed','Invoke-STIModHerramientas')
-  servidores = @('Invoke-STISrvSeguridad','Invoke-STISrvSistema','Invoke-STISrvAlmacenamiento','Invoke-STISrvServicios','Invoke-STISrvRed')
+  terminales = @('Invoke-ModSeguridad','Invoke-ModSistema','Invoke-ModHardware','Invoke-ModRed','Invoke-ModHerramientas')
+  servidores = @('Invoke-SrvSeguridad','Invoke-SrvSistema','Invoke-SrvAlmacenamiento','Invoke-SrvServicios','Invoke-SrvRed')
 }
 
 function New-MantContext {
@@ -15,7 +15,7 @@ function New-MantContext {
   @{ os = $os; formFactor = $ff.formFactor; isVm = $ff.isVm; hypervHost = $ff.hypervHost;
      tag = $Tag; cliente = $(if ($Cliente) { $Cliente } else { $Tag });
      installOcs = $InstallOcs; scriptDir = $ScriptDir; usuario = $Usuario; nota = $Nota;
-     tecnico = $Tecnico; cuentasAdmin = $STI_CUENTAS_ADMIN }
+     tecnico = $Tecnico; cuentasAdmin = $FLEET_CUENTAS_ADMIN }
 }
 
 function Invoke-Relevamiento {

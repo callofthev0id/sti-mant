@@ -17,7 +17,7 @@ BeforeAll {
       checks = $Checks
       errores = @()
     }
-    $path = Join-Path $Dir "${Equipo}_STI_MANT_${Tipo}_20260618.json"
+    $path = Join-Path $Dir "${Equipo}_FLEET_MANT_${Tipo}_20260618.json"
     ($obj | ConvertTo-Json -Depth 6) | Out-File -FilePath $path -Encoding UTF8
     $path
   }
@@ -44,9 +44,9 @@ BeforeAll {
     @{ categoria='Seguridad'; key='srv_firewall'; label='Firewall'; estado='Error'; detalle='off' }
   ) | Out-Null
   # JSON roto (no debe abortar la deteccion)
-  'no-es-json' | Out-File -FilePath (Join-Path $script:tmp 'roto_STI_MANT_terminales_20260618.json') -Encoding UTF8
+  'no-es-json' | Out-File -FilePath (Join-Path $script:tmp 'roto_FLEET_MANT_terminales_20260618.json') -Encoding UTF8
   # JSON sin meta.tipo
-  '{"meta":{"hostname":"X"},"checks":[]}' | Out-File -FilePath (Join-Path $script:tmp 'sintipo_STI_MANT_x_20260618.json') -Encoding UTF8
+  '{"meta":{"hostname":"X"},"checks":[]}' | Out-File -FilePath (Join-Path $script:tmp 'sintipo_FLEET_MANT_x_20260618.json') -Encoding UTF8
 }
 AfterAll {
   if ($script:tmp -and (Test-Path $script:tmp)) { Remove-Item -Recurse -Force $script:tmp }
@@ -65,7 +65,7 @@ Describe "Get-GenerarVocab" {
 
 Describe "Read-RelevamientoJson" {
   It "lee un JSON valido" {
-    $r = Read-RelevamientoJson -Path (Join-Path $script:tmp 'PC-VENTAS-01_STI_MANT_terminales_20260618.json')
+    $r = Read-RelevamientoJson -Path (Join-Path $script:tmp 'PC-VENTAS-01_FLEET_MANT_terminales_20260618.json')
     $r.ok | Should -BeTrue
     $r.tipo | Should -Be 'terminales'
     $r.hostname | Should -Be 'PC-VENTAS-01'
@@ -73,12 +73,12 @@ Describe "Read-RelevamientoJson" {
     @($r.checks).Count | Should -Be 2
   }
   It "no tira con JSON roto, marca invalido" {
-    $r = Read-RelevamientoJson -Path (Join-Path $script:tmp 'roto_STI_MANT_terminales_20260618.json')
+    $r = Read-RelevamientoJson -Path (Join-Path $script:tmp 'roto_FLEET_MANT_terminales_20260618.json')
     $r.ok | Should -BeFalse
     $r.error | Should -Be 'JSON ilegible'
   }
   It "marca invalido un JSON sin meta.tipo" {
-    $r = Read-RelevamientoJson -Path (Join-Path $script:tmp 'sintipo_STI_MANT_x_20260618.json')
+    $r = Read-RelevamientoJson -Path (Join-Path $script:tmp 'sintipo_FLEET_MANT_x_20260618.json')
     $r.ok | Should -BeFalse
     $r.error | Should -Be 'sin meta.tipo'
   }
@@ -143,11 +143,11 @@ Describe "New-PlanillaHtml" {
     $script:pTerm = New-PlanillaHtml -Items $script:items -Cliente 'ACME SA' -Periodo '2026-06' -Seg 'term'
     $script:pSrv  = New-PlanillaHtml -Items $script:items -Cliente 'ACME SA' -Periodo '2026-06' -Seg 'srv'
   }
-  It "contiene los equipos y el banner STI con logo (monitor+check SVG)" {
+  It "contiene los equipos y el banner con icono (circulo+check SVG)" {
     $script:pTerm | Should -Match 'PC-VENTAS-01'
     $script:pTerm | Should -Match 'PC-DEPO-02'
     $script:pTerm | Should -Match 'MANTENIMIENTO'
-    $script:pTerm | Should -Match 'M14 20 H86'   # path canonico del logo
+    $script:pTerm | Should -Match 'M50 12 A38 38'   # path del icono
   }
   It "terminales: 2 firmas al final (Tecnico + Referente), SIN columna Firma por fila" {
     $script:pTerm | Should -Match "class='firma-lbl'>Técnico<"
@@ -177,12 +177,12 @@ Describe "New-PlanillaHtml" {
   }
   It "terminales: celdas con label COMPACTO + color (Adv/Err entran en el recuadro)" {
     # Ok verde texto blanco; Advertencia abreviada a 'Adv' (ambar, texto oscuro legible)
-    $script:pTerm | Should -Match "background:#43C961;color:#ffffff'>Ok<"
-    $script:pTerm | Should -Match "background:#F2C03D;color:#3a2c00'>Adv<"
-    $script:pTerm | Should -Match "background:#E07820;color:#ffffff'>Err<"
+    $script:pTerm | Should -Match "background:#5EAE87;color:#ffffff'>Ok<"
+    $script:pTerm | Should -Match "background:#D7A858;color:#312209'>Adv<"
+    $script:pTerm | Should -Match "background:#C77539;color:#ffffff'>Err<"
     $script:pTerm | Should -Match "class='st na'>N/A<"
     # NO debe salir el label largo en la grilla de terminales
-    $script:pTerm | Should -Not -Match "background:#F2C03D;color:#3a2c00'>Advertencia<"
+    $script:pTerm | Should -Not -Match "background:#D7A858;color:#312209'>Advertencia<"
   }
   It "terminales: columna Usuario con nombre desde meta.usuario" {
     $script:pTerm | Should -Match "<th class='usr'>Usuario</th>"
@@ -204,7 +204,7 @@ Describe "New-PlanillaHtml" {
     # una fila por check (Firewall + Backup), con label + color en Estado
     $script:pSrv | Should -Match "<td class='mnt'>Firewall</td>"
     $script:pSrv | Should -Match "<td class='mnt'>Backup \(Acronis/Cobian\)</td>"
-    $script:pSrv | Should -Match "background:#43C961;color:#ffffff'>Ok<"
+    $script:pSrv | Should -Match "background:#5EAE87;color:#ffffff'>Ok<"
     # NO grilla apaisada de servidores (no checks como columnas verticales)
     $script:pSrv | Should -Not -Match "MANTENIMIENTO DE TERMINALES"
   }
@@ -218,7 +218,7 @@ Describe "New-PlanillaHtml" {
   }
   It "servidores: header centrado con fondo suave por tipo (fisico verde, VM azul) + borde izq" {
     $script:pSrv | Should -Match 'justify-content:center'
-    $script:pSrv | Should -Match '.srv-card.fisico .srv-hdr\{background:#dff3e6'
+    $script:pSrv | Should -Match '.srv-card.fisico .srv-hdr\{background:#E3EFE9'
     $script:pSrv | Should -Match '.srv-card.vm .srv-hdr\{background:#dce9fb'
     # borde izquierdo de color que le gusta al usuario
     $script:pSrv | Should -Match '.srv-card.fisico\{border-left:5px solid var\(--verde\)'
@@ -254,7 +254,7 @@ Describe "New-InformeLocalHtml (informe de hallazgos)" {
   It "por equipo muestra SOLO checks no-Ok (Firewall Ok no aparece como hallazgo de PC-VENTAS-01)" {
     # PC-VENTAS-01 tiene Firewall=Ok y Antivirus=Advertencia. Solo el Advertencia debe estar como item.
     $script:inf | Should -Match "<td class='item'>Antivirus ESET</td>"
-    $script:inf | Should -Not -Match "<td class='item'>Firewall</td>\s*<td class='st' style='background:#43C961"
+    $script:inf | Should -Not -Match "<td class='item'>Firewall</td>\s*<td class='st' style='background:#5EAE87"
   }
   It "estado general por equipo (badge) y conteo de hallazgos" {
     $script:inf | Should -Match "class='gen'"
@@ -265,8 +265,8 @@ Describe "New-InformeLocalHtml (informe de hallazgos)" {
     $script:inf | Should -Not -Match "td class='det' contenteditable='true'"
   }
   It "estado con label + color legible (Advertencia texto oscuro, Error)" {
-    $script:inf | Should -Match "background:#F2C03D;color:#3a2c00'>Advertencia<"
-    $script:inf | Should -Match "background:#E07820;color:#ffffff'>Error<"
+    $script:inf | Should -Match "background:#D7A858;color:#312209'>Advertencia<"
+    $script:inf | Should -Match "background:#C77539;color:#ffffff'>Error<"
   }
   It "diferencia VM vs fisico en las secciones de hallazgos" {
     $script:inf | Should -Match "<section class='fisico'"
@@ -274,12 +274,12 @@ Describe "New-InformeLocalHtml (informe de hallazgos)" {
   }
 }
 
-Describe "Get-StiWindow (carga WPF real con panel Generar)" {
+Describe "Get-AppWindow (carga WPF real con panel Generar)" {
   $script:wpfOk = $false
   try { Add-Type -AssemblyName PresentationFramework, PresentationCore, WindowsBase -ErrorAction Stop; $script:wpfOk = $true } catch {}
 
   It "la ventana entera carga y los x:Name del panel Generar se encuentran" -Skip:(-not $script:wpfOk) {
-    $xaml = New-StiWindowXaml -Hostname 'CLAUDE' -Version '1.0'
+    $xaml = New-AppWindowXaml -Hostname 'CLAUDE' -Version '1.0'
     $rs = [runspacefactory]::CreateRunspace(); $rs.ApartmentState = 'STA'; $rs.Open()
     $ps = [powershell]::Create(); $ps.Runspace = $rs
     [void]$ps.AddScript({
