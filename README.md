@@ -1,6 +1,10 @@
 # Fleet Maintenance Toolkit
 
-`Stack: PowerShell 5.1+, WPF, Pester 5.`
+```
+lautaro@v0id:~/fleet-toolkit$ irm https://raw.githubusercontent.com/callofthev0id/sti-mant/main/get.ps1 | iex
+```
+
+`Stack: PowerShell 5.1+ · WPF · Pester 5`
 
 A PowerShell toolkit for auditing and maintaining fleets of Windows machines during on-site or remote visits. It runs locally on the target machine, no internet connection or credentials required, and produces a maintenance checklist, a hardware/software inventory, and consolidated HTML/JSON reports.
 
@@ -107,38 +111,38 @@ If Cobian Reflector or Cobian Backup is installed on the machine, the backup che
 
 ```
 fleet-toolkit/
-  fleet-gui.ps1       entry point: WPF graphical interface
-  fleet-mant.ps1      entry point: maintenance + inventory + menu
-  fleet-informe.ps1   entry point: consolidated report
-  gui/                GUI logic
-    lib/
-      gui-logic.ps1         tab orchestration and state
-      gui-theme.ps1         visual theme
-      gui-branding.ps1      branding
-      gui-xaml.ps1          window XAML definition
-      gui-runspace.ps1      runs the audit without freezing the UI
-      gui-tab-inventario.ps1
-      gui-tab-mantenimiento.ps1
-      gui-tab-utilidades.ps1
-      gui-tab-generar.ps1
-  lib/                pure logic + WMI/registry collectors + HTML rendering
-    core.ps1            reusable core: New-MantContext / Invoke-Relevamiento
-    audit.ps1           audit trail for Utilities actions (Event Log + JSON-lines + text)
-    common.ps1          pure helpers, check manifest, config
-    thresholds.ps1       value -> traffic-light status evaluators
-    runspace.ps1        runs check modules in parallel
-    output.ps1          TSV, maintenance HTML, JSON
-    manual.ps1          interactive collection of manual checks
-    cobian.ps1          Cobian backup auto-detection
-    inventario.ps1      inventory model + report
-    inv-*.ps1           inventory sections (obsolescence, security, context, health)
-    score.ps1           health score
-    informe-model.ps1   JSON -> report model
-    informe-html.ps1    consolidated report rendering
-  modules/            one module per check category (security, system, hardware, network, tools, servers)
-  tests/              Pester tests for the pure logic
-  build.ps1           merges lib + modules + entry point into a single file
-  package-release.py  builds the release zip
+├── fleet-gui.ps1        entry point: WPF graphical interface
+├── fleet-mant.ps1       entry point: maintenance + inventory + menu
+├── fleet-informe.ps1    entry point: consolidated report
+├── gui/                 GUI logic
+│   └── lib/
+│       ├── gui-logic.ps1            tab orchestration and state
+│       ├── gui-theme.ps1            visual theme
+│       ├── gui-branding.ps1         branding
+│       ├── gui-xaml.ps1             window XAML definition
+│       ├── gui-runspace.ps1         runs the audit without freezing the UI
+│       ├── gui-tab-inventario.ps1
+│       ├── gui-tab-mantenimiento.ps1
+│       ├── gui-tab-utilidades.ps1
+│       └── gui-tab-generar.ps1
+├── lib/                 pure logic + WMI/registry collectors + HTML rendering
+│   ├── core.ps1             reusable core: New-MantContext / Invoke-Relevamiento
+│   ├── audit.ps1            audit trail for Utilities actions (Event Log + JSON-lines + text)
+│   ├── common.ps1           pure helpers, check manifest, config
+│   ├── thresholds.ps1       value -> traffic-light status evaluators
+│   ├── runspace.ps1         runs check modules in parallel
+│   ├── output.ps1           TSV, maintenance HTML, JSON
+│   ├── manual.ps1           interactive collection of manual checks
+│   ├── cobian.ps1           Cobian backup auto-detection
+│   ├── inventario.ps1       inventory model + report
+│   ├── inv-*.ps1            inventory sections (obsolescence, security, context, health)
+│   ├── score.ps1            health score
+│   ├── informe-model.ps1    JSON -> report model
+│   └── informe-html.ps1     consolidated report rendering
+├── modules/              one module per check category (security, system, hardware, network, tools, servers)
+├── tests/                Pester tests for the pure logic
+├── build.ps1             merges lib + modules + entry point into a single file
+└── package-release.py    builds the release zip
 ```
 
 The code lives modularly under `lib/`, `modules/` and `gui/`. The GUI (`fleet-gui.ps1`) builds on `core.ps1`, which exposes the audit as reusable functions (`New-MantContext`, `Invoke-Relevamiento`) shared with the CLI. For distribution, `build.ps1` merges everything into a single `.ps1` per entry point (no loose file dependencies). Check modules run in parallel via a runspace pool.
