@@ -1,7 +1,7 @@
 # Fleet Maintenance Toolkit
 
 ```
-lautaro@v0id:~/fleet-toolkit$ irm https://raw.githubusercontent.com/callofthev0id/sti-mant/main/get.ps1 | iex
+irm https://raw.githubusercontent.com/callofthev0id/sti-mant/main/get.ps1 | iex
 ```
 
 `Stack: PowerShell 5.1+ · WPF · Pester 5`
