@@ -106,7 +106,7 @@ If Cobian Reflector or Cobian Backup is installed on the machine, the backup che
 ## Architecture
 
 ```
-sti-mant/
+fleet-toolkit/
   fleet-gui.ps1       entry point: WPF graphical interface
   fleet-mant.ps1      entry point: maintenance + inventory + menu
   fleet-informe.ps1   entry point: consolidated report
