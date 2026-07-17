@@ -1,5 +1,5 @@
 ============================================================
-  STI - HERRAMIENTA DE MANTENIMIENTO
+  FLEET MAINTENANCE TOOLKIT
   Guia rapida para el tecnico
 ============================================================
 
@@ -35,7 +35,7 @@ Una ventana con cinco pestanas que cubren toda la visita:
 
 Como abrirla:
 
-  - Offline (desde esta carpeta): doble clic en  STI-GUI.bat
+  - Offline (desde esta carpeta): doble clic en  Fleet-GUI.bat
     Lanza la GUI y se auto-eleva (pide UAC una vez).
 
   - Remoto, en cualquier equipo, desde PowerShell, pega esta linea:
@@ -43,7 +43,7 @@ Como abrirla:
     Baja la ultima version y abre la GUI (tambien se auto-eleva).
     Nota: bajar y correr un script sin firma puede gatillar
     SmartScreen o el antivirus en algunos equipos. El codigo es
-    abierto (repo callofthev0id/sti-mant). Si molesta, usa STI-GUI.bat.
+    abierto (repo callofthev0id/sti-mant). Si molesta, usa Fleet-GUI.bat.
 
 
 NO necesita internet ni credenciales (salvo el modo remoto irm|iex,
@@ -64,7 +64,7 @@ COMO SE USA (lo mas simple)
 1. Descomprimi esta carpeta en el equipo (Escritorio, por ejemplo).
    Manten todos los archivos juntos en la misma carpeta.
 
-2. Doble clic en  STI-Mantenimiento.bat
+2. Doble clic en  fleet-toolkit.bat
 
 3. Elegi en el menu:
 
@@ -110,8 +110,8 @@ DONDE QUEDAN LOS ARCHIVOS
 -------------------------
 Todo va a la carpeta  C:\zback  (se crea sola si no existe):
 
-  <equipo>_STI_MANT_<tipo>_<fecha>.html   <- relevamiento del equipo
-  <equipo>_STI_MANT_<tipo>_<fecha>.json   <- detalle (NO borrar)
+  <equipo>_FLEET_MANT_<tipo>_<fecha>.html   <- relevamiento del equipo
+  <equipo>_FLEET_MANT_<tipo>_<fecha>.json   <- detalle (NO borrar)
 
 El informe consolidado (tambien en C:\zback):
 
@@ -137,7 +137,7 @@ USO AVANZADO (linea de comandos)
 --------------------------------
 Relevamiento directo, sin menu:
 
-  powershell -ExecutionPolicy Bypass -File sti-mant.ps1 -Tag <nc> ^
+  powershell -ExecutionPolicy Bypass -File fleet-mant.ps1 -Tag <nc> ^
     [-Tipo terminales|servidores] [-Cliente "Nombre"] ^
     [-Usuario "usuario del equipo"] [-Nota "obs"] [-InstallOCS]
 
@@ -151,7 +151,7 @@ Relevamiento directo, sin menu:
 
 Informe desde una carpeta de JSON (por defecto C:\zback):
 
-  powershell -ExecutionPolicy Bypass -File sti-informe.ps1 ^
+  powershell -ExecutionPolicy Bypass -File fleet-informe.ps1 ^
     [-Carpeta "C:\ruta\a\los\json"] [-Cliente "Nombre"] ^
     [-Periodo 2026-06] [-Salida "C:\donde\guardar"]
 
@@ -167,5 +167,5 @@ PROBLEMAS FRECUENTES
 
 
 ============================================================
-  STI Mantenimiento  -  proyecto de portfolio / demo
+  Fleet Maintenance Toolkit  -  proyecto de portfolio / demo
 ============================================================

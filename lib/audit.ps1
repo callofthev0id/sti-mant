@@ -1,8 +1,8 @@
-﻿# lib/audit.ps1 - Subsistema de logging de auditoria de STI Mantenimiento.
+﻿# lib/audit.ps1 - Subsistema de logging de auditoria de Fleet Maintenance Toolkit.
 #
 # Registra CADA accion sensible (scan/apply/undo de la tab Utilidades, o cualquier otra que el
 # resto del codigo quiera auditar) con campos estructurados, a tres destinos en paralelo:
-#   (a) Windows Event Log (fuente custom 'STI Mantenimiento' en el log Application). Es el registro
+#   (a) Windows Event Log (fuente custom 'Fleet Maintenance Toolkit' en el log Application). Es el registro
 #       de auditoria del SO: tamper-evident (limpiar el log exige admin y genera el evento 1102).
 #   (b) Archivo JSON-lines (un objeto JSON por linea), para consumo de maquina (panel/backend interno).
 #   (c) Archivo de texto humano legible.
@@ -16,22 +16,22 @@
 # backend interno (follow-up) cubre ese caso.
 
 # Carpeta y archivos de auditoria. Fijos (no dependen del cwd). ProgramData es la ruta canonica
-# para datos de aplicacion a nivel maquina; cae a C:\zback\sti-audit si ProgramData no resuelve.
-function Get-StiAuditDir {
+# para datos de aplicacion a nivel maquina; cae a C:\zback\fleet-audit si ProgramData no resuelve.
+function Get-AuditDir {
   $base = $env:ProgramData
-  if ([string]::IsNullOrWhiteSpace($base)) { return 'C:\zback\sti-audit' }
-  Join-Path $base 'STI\audit'
+  if ([string]::IsNullOrWhiteSpace($base)) { return 'C:\zback\fleet-audit' }
+  Join-Path $base 'FleetToolkit\audit'
 }
-function Get-StiAuditJsonPath  { Join-Path (Get-StiAuditDir) 'sti-audit.jsonl' }
-function Get-StiAuditTextPath  { Join-Path (Get-StiAuditDir) 'sti-audit.log' }
+function Get-AuditJsonPath  { Join-Path (Get-AuditDir) 'fleet-audit.jsonl' }
+function Get-AuditTextPath  { Join-Path (Get-AuditDir) 'fleet-audit.log' }
 # Registro de eventos DEDICADO: aparece en el Visor de Eventos bajo
-# "Registros de aplicaciones y servicios" -> "STI Mantenimiento" (no mezclado en Application).
+# "Registros de aplicaciones y servicios" -> "Fleet Maintenance Toolkit" (no mezclado en Application).
 # Es el registro de auditoria de cada cambio de mantenimiento (evidencia consultable/exportable).
-function Get-StiAuditEventLog   { 'STI Mantenimiento' }
-function Get-StiAuditEventSource { 'STI Mantenimiento' }
+function Get-AuditEventLog   { 'Fleet Maintenance Toolkit' }
+function Get-AuditEventSource { 'Fleet Maintenance Toolkit' }
 
 # EventId por tipo de accion (estable, documentado): permite filtrar el Event Log por evento.
-function Get-StiAuditEventId {
+function Get-AuditEventId {
   param([string]$Accion)
   switch ($Accion) {
     'scan'   { 1001 }
@@ -46,8 +46,8 @@ function Get-StiAuditEventId {
 # solo SYSTEM y Administradores tienen control total; se desactiva la herencia para que un permiso
 # heredado de usuarios estandar no reabra el delete/write. Nunca tira: si Set-Acl falla (no admin,
 # FS sin ACL), se sigue con la carpeta tal cual. Devuelve $true si pudo endurecer.
-function Initialize-StiAuditStore {
-  $dir = Get-StiAuditDir
+function Initialize-AuditStore {
+  $dir = Get-AuditDir
   try {
     if (-not (Test-Path $dir)) { New-Item -ItemType Directory -Path $dir -Force | Out-Null }
   } catch { return $false }
@@ -70,9 +70,9 @@ function Initialize-StiAuditStore {
 
 # Asegura la fuente del Event Log. Crearla la primera vez requiere admin (New-EventLog). Si no se
 # puede (sin admin o ya existe con error), degrada: devuelve $false y el resto sigue con archivo.
-function Initialize-StiAuditEventSource {
-  $src = Get-StiAuditEventSource
-  $log = Get-StiAuditEventLog
+function Initialize-AuditEventSource {
+  $src = Get-AuditEventSource
+  $log = Get-AuditEventLog
   try {
     if ([System.Diagnostics.EventLog]::SourceExists($src)) {
       # La fuente existe. Si quedo registrada en otro log (ej una version vieja la creo en
@@ -90,7 +90,7 @@ function Initialize-StiAuditEventSource {
 }
 
 # Mapea resultado -> EntryType del Event Log. error -> Error; warning -> Warning; resto Information.
-function Get-StiAuditEntryType {
+function Get-AuditEntryType {
   param([string]$Resultado)
   if ($Resultado -match '^(?i)error') { return 'Error' }
   if ($Resultado -match '^(?i)(warn|aviso)') { return 'Warning' }
@@ -99,7 +99,7 @@ function Get-StiAuditEntryType {
 
 # Arma el registro estructurado (hashtable ordenado) a partir de los campos. timestamp ISO 8601,
 # tecnico y hostname auto-detectados si no se pasan. No escribe nada: solo da forma al dato.
-function New-StiAuditRecord {
+function New-AuditRecord {
   param(
     [string]$Accion,                 # scan | apply | undo | safety
     [string]$UtilId = '',
@@ -130,7 +130,7 @@ function New-StiAuditRecord {
 }
 
 # Linea de texto humano a partir del registro. Una linea, campos clave en orden de lectura.
-function Format-StiAuditTextLine {
+function Format-AuditTextLine {
   param([System.Collections.IDictionary]$Record)
   $r = $Record
   $util = if ($r.util_label) { "$($r.util_label) [$($r.util_id)]" } elseif ($r.util_id) { $r.util_id } else { '-' }
@@ -141,7 +141,7 @@ function Format-StiAuditTextLine {
 
 # Funcion principal: registra una accion de auditoria en los tres destinos. Best-effort total.
 # Devuelve un resumen { eventlog; json; texto } de que destinos pudieron escribir (util en tests).
-function Write-StiAudit {
+function Write-Audit {
   param(
     [Parameter(Mandatory)][ValidateSet('scan','apply','undo','safety')][string]$Accion,
     [string]$UtilId = '',
@@ -154,35 +154,35 @@ function Write-StiAudit {
     [string]$Tecnico = '',
     [string]$Hostname = ''
   )
-  $rec = New-StiAuditRecord -Accion $Accion -UtilId $UtilId -UtilLabel $UtilLabel -Categoria $Categoria `
+  $rec = New-AuditRecord -Accion $Accion -UtilId $UtilId -UtilLabel $UtilLabel -Categoria $Categoria `
          -EstadoAnterior $EstadoAnterior -EstadoNuevo $EstadoNuevo -Resultado $Resultado -Mensaje $Mensaje `
          -Tecnico $Tecnico -Hostname $Hostname
   $out = @{ eventlog = $false; json = $false; texto = $false }
 
   # (a) Windows Event Log
   try {
-    if (Initialize-StiAuditEventSource) {
-      $type = Get-StiAuditEntryType -Resultado $Resultado
-      $eid  = Get-StiAuditEventId -Accion $Accion
-      $body = (Format-StiAuditTextLine -Record $rec) + "`n`n" + (($rec.GetEnumerator() | ForEach-Object { "$($_.Key): $($_.Value)" }) -join "`n")
-      Write-EventLog -LogName (Get-StiAuditEventLog) -Source (Get-StiAuditEventSource) -EntryType $type -EventId $eid -Message $body -ErrorAction Stop
+    if (Initialize-AuditEventSource) {
+      $type = Get-AuditEntryType -Resultado $Resultado
+      $eid  = Get-AuditEventId -Accion $Accion
+      $body = (Format-AuditTextLine -Record $rec) + "`n`n" + (($rec.GetEnumerator() | ForEach-Object { "$($_.Key): $($_.Value)" }) -join "`n")
+      Write-EventLog -LogName (Get-AuditEventLog) -Source (Get-AuditEventSource) -EntryType $type -EventId $eid -Message $body -ErrorAction Stop
       $out.eventlog = $true
     }
   } catch { }
 
   # carpeta + ACL (best-effort) antes de los archivos
-  try { Initialize-StiAuditStore | Out-Null } catch { }
+  try { Initialize-AuditStore | Out-Null } catch { }
 
   # (b) JSON-lines (append-only)
   try {
     $json = ($rec | ConvertTo-Json -Compress -Depth 5)
-    Add-Content -Path (Get-StiAuditJsonPath) -Value $json -Encoding UTF8 -ErrorAction Stop
+    Add-Content -Path (Get-AuditJsonPath) -Value $json -Encoding UTF8 -ErrorAction Stop
     $out.json = $true
   } catch { }
 
   # (c) Texto humano (append-only)
   try {
-    Add-Content -Path (Get-StiAuditTextPath) -Value (Format-StiAuditTextLine -Record $rec) -Encoding UTF8 -ErrorAction Stop
+    Add-Content -Path (Get-AuditTextPath) -Value (Format-AuditTextLine -Record $rec) -Encoding UTF8 -ErrorAction Stop
     $out.texto = $true
   } catch { }
 
@@ -192,9 +192,9 @@ function Write-StiAudit {
 # Lee las ultimas N entradas del JSON-lines (mas recientes primero) para el panel interno de la GUI
 # y para export programatico. Tolerante a fallo: si el archivo no existe o una linea esta corrupta,
 # la saltea y devuelve lo que pueda (array, posiblemente vacio). Solo LEE.
-function Get-StiAuditRecent {
+function Get-AuditRecent {
   param([int]$Count = 20)
-  $path = Get-StiAuditJsonPath
+  $path = Get-AuditJsonPath
   if (-not (Test-Path $path)) { return @() }
   $lines = @()
   try { $lines = @(Get-Content -Path $path -Encoding UTF8 -ErrorAction Stop) } catch { return @() }
@@ -211,7 +211,7 @@ function Get-StiAuditRecent {
 }
 
 # Linea legible para el panel interno (compacta, una linea por entrada del JSON-lines parseado).
-function Format-StiAuditPanelLine {
+function Format-AuditPanelLine {
   param($Record)
   if (-not $Record) { return '' }
   $hora = $Record.timestamp

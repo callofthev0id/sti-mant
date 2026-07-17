@@ -1,9 +1,9 @@
 ﻿# gui/lib/gui-runspace.ps1 - corre el relevamiento en un runspace propio para no congelar
-# el hilo STA de WPF. La UI drena la cola de progreso por DispatcherTimer (ver sti-gui.ps1).
+# el hilo STA de WPF. La UI drena la cola de progreso por DispatcherTimer (ver fleet-gui.ps1).
 
 # Captura las definiciones de funcion de la sesion actual + las variables del core en un
 # InitialSessionState. Asi el runspace de fondo arranca con Invoke-Relevamiento, los modulos,
-# los helpers y $MOD_FNS/$THR/$STI_CUENTAS_ADMIN ya cargados, SIN depender de dot-source por ruta.
+# los helpers y $MOD_FNS/$THR/$FLEET_CUENTAS_ADMIN ya cargados, SIN depender de dot-source por ruta.
 # Esto hace que el relevamiento funcione tanto en dev (libs sueltas) como en el dist single-file
 # (todo el core inline en el proceso, pero invisible para un runspace nuevo sin esta inyeccion).
 # Mismo patron que Invoke-ModulesParallel en lib/runspace.ps1.
@@ -20,7 +20,7 @@ function New-CoreInitialSessionState {
         (New-Object System.Management.Automation.Runspaces.SessionStateFunctionEntry($cmd.Name, $cmd.Definition)))
     } catch {}
   }
-  foreach ($vn in @('MOD_FNS','THR','STI_CUENTAS_ADMIN')) {
+  foreach ($vn in @('MOD_FNS','THR','FLEET_CUENTAS_ADMIN')) {
     $v = Get-Variable $vn -ErrorAction SilentlyContinue
     if ($v) {
       $iss.Variables.Add(

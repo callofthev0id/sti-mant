@@ -1,5 +1,5 @@
 # Cuentas admin locales (nunca versionar, ver lib/common.ps1)
-lib/sti-cuentas.local
+lib/cuentas-admin.local
 
 # Build/release artifacts
 dist/

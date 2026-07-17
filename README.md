@@ -1,4 +1,6 @@
-# STI Mantenimiento
+# Fleet Maintenance Toolkit
+
+`Stack: PowerShell 5.1+, WPF, Pester 5.`
 
 A PowerShell toolkit for auditing and maintaining fleets of Windows machines during on-site or remote visits. It runs locally on the target machine, no internet connection or credentials required, and produces a maintenance checklist, a hardware/software inventory, and consolidated HTML/JSON reports.
 
@@ -27,7 +29,7 @@ Generates its own HTML and JSON.
 
 ## Graphical interface
 
-`sti-gui.ps1` is a WPF window with five tabs covering the full visit:
+`fleet-gui.ps1` is a WPF window with five tabs covering the full visit:
 
 - **Main:** identify the machine (client, tag, type) and trigger the audit run.
 - **Inventory:** hardware shown as cards (CPU, RAM, disks, OS, GPU, identifiers).
@@ -45,7 +47,7 @@ irm https://raw.githubusercontent.com/callofthev0id/sti-mant/main/get.ps1 | iex
 
 This downloads the latest published release and opens the GUI, self-elevating (one UAC prompt) so the Utilities tab and the checks that read system state work correctly.
 
-Downloading and running an unsigned script can trigger SmartScreen or antivirus warnings on some machines; that is inherent to the `irm | iex` pattern, not something specific to this script. The code is open and lives in this repo. If you'd rather avoid it, use the downloadable release instead (`STI-GUI.bat`).
+Downloading and running an unsigned script can trigger SmartScreen or antivirus warnings on some machines; that is inherent to the `irm | iex` pattern, not something specific to this script. The code is open and lives in this repo. If you'd rather avoid it, use the downloadable release instead (`Fleet-GUI.bat`).
 
 ## Requirements
 
@@ -60,23 +62,23 @@ No network access or credentials required beyond the initial download.
 
 ### Graphical interface
 
-The primary mode. Remote: see the command above. Offline: double-click `STI-GUI.bat` from a downloaded release.
+The primary mode. Remote: see the command above. Offline: double-click `Fleet-GUI.bat` from a downloaded release.
 
 ### Menu or command line
 
-Simplest path without the GUI: unpack a release on the machine and double-click `STI-Mantenimiento.bat`. The menu auto-detects whether the machine is a terminal or a server and writes everything to `C:\zback`.
+Simplest path without the GUI: unpack a release on the machine and double-click `fleet-toolkit.bat`. The menu auto-detects whether the machine is a terminal or a server and writes everything to `C:\zback`.
 
 From the command line directly:
 
 ```powershell
 # Maintenance run (auto-detects terminal/server from the OS)
-PowerShell -ExecutionPolicy Bypass -File sti-mant.ps1 -Tag <name> [-Tipo terminales|servidores] [-Cliente "Name"] [-Usuario "user"] [-Nota "note"]
+PowerShell -ExecutionPolicy Bypass -File fleet-mant.ps1 -Tag <name> [-Tipo terminales|servidores] [-Cliente "Name"] [-Usuario "user"] [-Nota "note"]
 
 # Inventory
-PowerShell -ExecutionPolicy Bypass -File sti-mant.ps1 -Inventario [-Cliente "Name"]
+PowerShell -ExecutionPolicy Bypass -File fleet-mant.ps1 -Inventario [-Cliente "Name"]
 
 # Consolidated report from a folder of JSON files (defaults to C:\zback)
-PowerShell -ExecutionPolicy Bypass -File sti-informe.ps1 [-Carpeta <path>] [-Cliente "Name"] [-Periodo 2026-06]
+PowerShell -ExecutionPolicy Bypass -File fleet-informe.ps1 [-Carpeta <path>] [-Cliente "Name"] [-Periodo 2026-06]
 ```
 
 Options:
@@ -85,13 +87,13 @@ Options:
 - `-Inventario`: runs the inventory pass. Can be combined with `-Tag` to run both.
 - `-InstallOCS`: if an `OcsPackage-x64.exe` installer is placed next to the script, installs it. By default the script only checks whether an agent is already present; the installer itself is not bundled.
 
-The admin-accounts check (which local accounts are expected on a managed machine) reads its expected list from the `STI_CUENTAS_ADMIN` environment variable (comma or semicolon separated), or from an optional local file `lib/sti-cuentas.local` (one account per line, `#` for comments, not versioned). If neither is set, the check degrades instead of failing and never hardcodes usernames.
+The admin-accounts check (which local accounts are expected on a managed machine) reads its expected list from the `FLEET_CUENTAS_ADMIN` environment variable (comma or semicolon separated), or from an optional local file `lib/cuentas-admin.local` (one account per line, `#` for comments, not versioned). If neither is set, the check degrades instead of failing and never hardcodes usernames.
 
 ## Output
 
 Everything lands in `C:\zback` (created automatically). File names are prefixed with the hostname:
 
-- `<host>_STI_MANT_<type>_<date>.html` / `.json`: maintenance pass.
+- `<host>_FLEET_MANT_<type>_<date>.html` / `.json`: maintenance pass.
 - `<host>_RELEVAMIENTO_<date>.html` / `.json`: inventory pass.
 - `<host>_Informe_Mantenimiento_<client>_<period>_{FULL,TERMINALES,SERVIDORES}.html`: consolidated report.
 
@@ -104,10 +106,10 @@ If Cobian Reflector or Cobian Backup is installed on the machine, the backup che
 ## Architecture
 
 ```
-sti-mant/
-  sti-gui.ps1         entry point: WPF graphical interface
-  sti-mant.ps1        entry point: maintenance + inventory + menu
-  sti-informe.ps1     entry point: consolidated report
+fleet-toolkit/
+  fleet-gui.ps1       entry point: WPF graphical interface
+  fleet-mant.ps1      entry point: maintenance + inventory + menu
+  fleet-informe.ps1   entry point: consolidated report
   gui/                GUI logic
     lib/
       gui-logic.ps1         tab orchestration and state
@@ -139,14 +141,14 @@ sti-mant/
   package-release.py  builds the release zip
 ```
 
-The code lives modularly under `lib/`, `modules/` and `gui/`. The GUI (`sti-gui.ps1`) builds on `core.ps1`, which exposes the audit as reusable functions (`New-MantContext`, `Invoke-Relevamiento`) shared with the CLI. For distribution, `build.ps1` merges everything into a single `.ps1` per entry point (no loose file dependencies). Check modules run in parallel via a runspace pool.
+The code lives modularly under `lib/`, `modules/` and `gui/`. The GUI (`fleet-gui.ps1`) builds on `core.ps1`, which exposes the audit as reusable functions (`New-MantContext`, `Invoke-Relevamiento`) shared with the CLI. For distribution, `build.ps1` merges everything into a single `.ps1` per entry point (no loose file dependencies). Check modules run in parallel via a runspace pool.
 
 ## Utilities audit trail
 
 Actions in the Utilities tab that modify the machine are logged for traceability. `lib/audit.ps1` writes every action to:
 
-- A dedicated Event Log source ("STI Mantenimiento"), visible in Event Viewer under Applications and Services Logs.
-- Files under `C:\ProgramData\STI\audit\`: one JSON-lines record per action plus a plain-text log.
+- A dedicated Event Log source ("Fleet Maintenance Toolkit"), visible in Event Viewer under Applications and Services Logs.
+- Files under `C:\ProgramData\FleetToolkit\audit\`: one JSON-lines record per action plus a plain-text log.
 
 Queryable and exportable, so it's possible to reconstruct what was changed on a machine and when.
 
@@ -161,7 +163,7 @@ Queryable and exportable, so it's possible to reconstruct what was changed on a 
 
 1. Create `lib/inv-<name>.ps1` with a `Get-Inv<Name>` function returning a hashtable.
 2. Call it from `New-InventarioModel` (in `lib/inventario.ps1`) and add the render for the section in `New-InventarioHtml`.
-3. Add the file to the `libOrder` list in `build.ps1` (and `build.py`) and to the dot-source list in `sti-mant.ps1`.
+3. Add the file to the `libOrder` list in `build.ps1` (and `build.py`) and to the dot-source list in `fleet-mant.ps1`.
 
 **If a new function is called from a module** (which runs in a parallel runspace), add it to the `$helpers` list in `lib/runspace.ps1`, or it won't be available inside the runspace.
 
@@ -170,7 +172,7 @@ Queryable and exportable, so it's possible to reconstruct what was changed on a 
 Code comments are in Spanish; the tool's intended technician audience is Spanish-speaking, same as the generated reports and `LEEME.txt`.
 
 ```powershell
-.\build.ps1 -Version <ver>     # generates dist/sti-*-v<ver>.ps1 (single-file, UTF-8 with BOM)
+.\build.ps1 -Version <ver>     # generates dist/fleet-*-v<ver>.ps1 (single-file, UTF-8 with BOM)
 Invoke-Pester tests            # Pester 5; tests the pure logic
 ```
 
@@ -185,7 +187,7 @@ Collectors (WMI, registry, SQLite) are validated on a real Windows machine, not 
 python3 package-release.py <ver>
 ```
 
-Produces `release/dist/sti-mantenimiento-v<ver>.zip` with the single-file builds (`sti-gui.ps1`, `sti-mant.ps1`, `sti-informe.ps1`), the `.bat` launchers, and the technician-facing `LEEME.txt` (in Spanish, since the toolkit's intended audience is Spanish-speaking).
+Produces `release/dist/fleet-maintenance-toolkit-v<ver>.zip` with the single-file builds (`fleet-gui.ps1`, `fleet-mant.ps1`, `fleet-informe.ps1`), the `.bat` launchers, and the technician-facing `LEEME.txt` (in Spanish, since the toolkit's intended audience is Spanish-speaking).
 
 ## Status
 

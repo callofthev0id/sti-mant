@@ -1,56 +1,56 @@
-﻿# gui/lib/gui-theme.ps1 - ResourceDictionary WPF con la paleta y estilos STI.
-# Tokens exactos de la guia interna de marca (no versionada en este repo). Cambiar un color = editar una linea aca.
-function New-StiTheme {
+﻿# gui/lib/gui-theme.ps1 - ResourceDictionary WPF con la paleta y estilos de la app.
+# Paleta propia (ver branding/design-system.md). Cambiar un color = editar una linea aca.
+function New-AppTheme {
 @'
 <Window.Resources>
-  <SolidColorBrush x:Key="StiVerde"      Color="#43C961"/>
-  <SolidColorBrush x:Key="StiVerdeDeep"  Color="#053028"/>
-  <SolidColorBrush x:Key="StiVerdeClaro" Color="#5fd47f"/>
-  <SolidColorBrush x:Key="StiBody"       Color="#0a1712"/>
-  <SolidColorBrush x:Key="StiWindow"     Color="#0e1a15"/>
-  <SolidColorBrush x:Key="StiCard"       Color="#13241c"/>
-  <SolidColorBrush x:Key="StiChipBg"     Color="#11352a"/>
-  <SolidColorBrush x:Key="StiChipBar"    Color="#0b2a21"/>
-  <SolidColorBrush x:Key="StiInput"      Color="#0c1c15"/>
-  <SolidColorBrush x:Key="StiBorde"      Color="#294a3b"/>
-  <SolidColorBrush x:Key="StiBordeSutil" Color="#1d3e31"/>
-  <SolidColorBrush x:Key="StiTexto"      Color="#eaf2ec"/>
-  <SolidColorBrush x:Key="StiTexto2"     Color="#9cc3b2"/>
-  <SolidColorBrush x:Key="StiTexto3"     Color="#7fb89e"/>
-  <SolidColorBrush x:Key="StiTenue"      Color="#6fb597"/>
-  <SolidColorBrush x:Key="StiAmbar"      Color="#e0a93a"/>
-  <SolidColorBrush x:Key="StiNaranja"    Color="#E07820"/>
-  <SolidColorBrush x:Key="StiRojo"       Color="#F05754"/>
-  <SolidColorBrush x:Key="StiNa"         Color="#6a8a7b"/>
+  <SolidColorBrush x:Key="AppAccent"      Color="#5EAE87"/>
+  <SolidColorBrush x:Key="AppAccentDeep"  Color="#0E271B"/>
+  <SolidColorBrush x:Key="AppAccentClaro" Color="#77BC9A"/>
+  <SolidColorBrush x:Key="AppBody"       Color="#0D1411"/>
+  <SolidColorBrush x:Key="AppWindow"     Color="#101814"/>
+  <SolidColorBrush x:Key="AppCard"       Color="#16211C"/>
+  <SolidColorBrush x:Key="AppChipBg"     Color="#182E23"/>
+  <SolidColorBrush x:Key="AppChipBar"    Color="#11241B"/>
+  <SolidColorBrush x:Key="AppInput"      Color="#0F1914"/>
+  <SolidColorBrush x:Key="AppBorde"      Color="#30433A"/>
+  <SolidColorBrush x:Key="AppBordeSutil" Color="#24372E"/>
+  <SolidColorBrush x:Key="AppTexto"      Color="#ECF0EE"/>
+  <SolidColorBrush x:Key="AppTexto2"     Color="#A4BBB0"/>
+  <SolidColorBrush x:Key="AppTexto3"     Color="#8BAC9C"/>
+  <SolidColorBrush x:Key="AppTenue"      Color="#7DA792"/>
+  <SolidColorBrush x:Key="AppAmbar"      Color="#C79C53"/>
+  <SolidColorBrush x:Key="AppNaranja"    Color="#C77539"/>
+  <SolidColorBrush x:Key="AppRojo"       Color="#DA6A72"/>
+  <SolidColorBrush x:Key="AppNa"         Color="#71837A"/>
 
-  <Style x:Key="StiLabel" TargetType="TextBlock">
-    <Setter Property="Foreground" Value="{StaticResource StiTexto3}"/>
+  <Style x:Key="AppLabel" TargetType="TextBlock">
+    <Setter Property="Foreground" Value="{StaticResource AppTexto3}"/>
     <Setter Property="FontFamily" Value="Space Grotesk, Segoe UI"/>
     <Setter Property="FontSize" Value="10"/>
     <Setter Property="FontWeight" Value="600"/>
   </Style>
 
-  <Style x:Key="StiSecHeader" TargetType="TextBlock">
-    <Setter Property="Foreground" Value="{StaticResource StiTenue}"/>
+  <Style x:Key="AppSecHeader" TargetType="TextBlock">
+    <Setter Property="Foreground" Value="{StaticResource AppTenue}"/>
     <Setter Property="FontFamily" Value="Space Grotesk, Segoe UI"/>
     <Setter Property="FontSize" Value="11"/>
     <Setter Property="FontWeight" Value="700"/>
     <Setter Property="Margin" Value="0,12,0,6"/>
   </Style>
 
-  <Style x:Key="StiGrupoHeader" TargetType="TextBlock">
-    <Setter Property="Foreground" Value="{StaticResource StiTenue}"/>
+  <Style x:Key="AppGrupoHeader" TargetType="TextBlock">
+    <Setter Property="Foreground" Value="{StaticResource AppTenue}"/>
     <Setter Property="FontFamily" Value="Space Grotesk, Segoe UI"/>
     <Setter Property="FontSize" Value="11"/>
     <Setter Property="FontWeight" Value="700"/>
     <Setter Property="Margin" Value="0,14,0,9"/>
   </Style>
 
-  <Style x:Key="StiCardExpander" TargetType="Expander">
-    <Setter Property="Background" Value="{StaticResource StiCard}"/>
-    <Setter Property="BorderBrush" Value="{StaticResource StiBorde}"/>
+  <Style x:Key="AppCardExpander" TargetType="Expander">
+    <Setter Property="Background" Value="{StaticResource AppCard}"/>
+    <Setter Property="BorderBrush" Value="{StaticResource AppBorde}"/>
     <Setter Property="BorderThickness" Value="1"/>
-    <Setter Property="Foreground" Value="{StaticResource StiTexto}"/>
+    <Setter Property="Foreground" Value="{StaticResource AppTexto}"/>
     <Setter Property="Template">
       <Setter.Value>
         <ControlTemplate TargetType="Expander">
@@ -69,7 +69,7 @@ function New-StiTheme {
                         </Grid.ColumnDefinitions>
                         <ContentPresenter Grid.Column="0" VerticalAlignment="Center"/>
                         <Path x:Name="arr" Grid.Column="1" VerticalAlignment="Center" Margin="10,0,0,0"
-                              Data="M0,0 L8,8 L16,0" Stroke="#6fb597" StrokeThickness="2" Fill="Transparent"
+                              Data="M0,0 L8,8 L16,0" Stroke="#7DA792" StrokeThickness="2" Fill="Transparent"
                               RenderTransformOrigin="0.5,0.5"/>
                       </Grid>
                     </Border>
@@ -85,7 +85,7 @@ function New-StiTheme {
                 <ContentPresenter ContentSource="Header"/>
               </ToggleButton>
               <Border x:Name="body" DockPanel.Dock="Bottom" Padding="14,0,14,12" Visibility="Collapsed"
-                      BorderBrush="{StaticResource StiBordeSutil}" BorderThickness="0,1,0,0">
+                      BorderBrush="{StaticResource AppBordeSutil}" BorderThickness="0,1,0,0">
                 <ContentPresenter/>
               </Border>
             </DockPanel>
@@ -100,23 +100,23 @@ function New-StiTheme {
     </Setter>
   </Style>
 
-  <Style x:Key="StiInputBox" TargetType="TextBox">
-    <Setter Property="Background" Value="{StaticResource StiInput}"/>
-    <Setter Property="Foreground" Value="{StaticResource StiTexto}"/>
-    <Setter Property="BorderBrush" Value="{StaticResource StiBorde}"/>
+  <Style x:Key="AppInputBox" TargetType="TextBox">
+    <Setter Property="Background" Value="{StaticResource AppInput}"/>
+    <Setter Property="Foreground" Value="{StaticResource AppTexto}"/>
+    <Setter Property="BorderBrush" Value="{StaticResource AppBorde}"/>
     <Setter Property="BorderThickness" Value="1"/>
     <Setter Property="Padding" Value="6,4"/>
     <Setter Property="FontFamily" Value="Space Grotesk, Segoe UI"/>
     <Setter Property="FontSize" Value="12"/>
   </Style>
 
-  <Style x:Key="StiInputMono" TargetType="TextBox" BasedOn="{StaticResource StiInputBox}">
+  <Style x:Key="AppInputMono" TargetType="TextBox" BasedOn="{StaticResource AppInputBox}">
     <Setter Property="FontFamily" Value="DM Mono, Consolas"/>
   </Style>
 
-  <Style x:Key="StiBtnPrimary" TargetType="Button">
-    <Setter Property="Background" Value="{StaticResource StiVerde}"/>
-    <Setter Property="Foreground" Value="{StaticResource StiVerdeDeep}"/>
+  <Style x:Key="AppBtnPrimary" TargetType="Button">
+    <Setter Property="Background" Value="{StaticResource AppAccent}"/>
+    <Setter Property="Foreground" Value="{StaticResource AppAccentDeep}"/>
     <Setter Property="FontFamily" Value="Space Grotesk, Segoe UI"/>
     <Setter Property="FontWeight" Value="700"/>
     <Setter Property="FontSize" Value="13"/>
@@ -125,8 +125,8 @@ function New-StiTheme {
     <Setter Property="Cursor" Value="Hand"/>
   </Style>
 
-  <Style x:Key="StiChip" TargetType="RadioButton">
-    <Setter Property="Foreground" Value="{StaticResource StiTexto2}"/>
+  <Style x:Key="AppChip" TargetType="RadioButton">
+    <Setter Property="Foreground" Value="{StaticResource AppTexto2}"/>
     <Setter Property="FontFamily" Value="Space Grotesk, Segoe UI"/>
     <Setter Property="FontSize" Value="12"/>
     <Setter Property="Margin" Value="3,0"/>
@@ -136,17 +136,17 @@ function New-StiTheme {
       <Setter.Value>
         <ControlTemplate TargetType="RadioButton">
           <Border x:Name="chip" CornerRadius="20" Padding="{TemplateBinding Padding}"
-                  Background="{StaticResource StiChipBg}" BorderBrush="{StaticResource StiBorde}" BorderThickness="1">
+                  Background="{StaticResource AppChipBg}" BorderBrush="{StaticResource AppBorde}" BorderThickness="1">
             <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
           </Border>
           <ControlTemplate.Triggers>
             <Trigger Property="IsChecked" Value="True">
-              <Setter TargetName="chip" Property="Background" Value="{StaticResource StiVerde}"/>
-              <Setter Property="Foreground" Value="{StaticResource StiVerdeDeep}"/>
+              <Setter TargetName="chip" Property="Background" Value="{StaticResource AppAccent}"/>
+              <Setter Property="Foreground" Value="{StaticResource AppAccentDeep}"/>
               <Setter Property="FontWeight" Value="600"/>
               <Setter TargetName="chip" Property="Effect">
                 <Setter.Value>
-                  <DropShadowEffect Color="#43C961" BlurRadius="12" ShadowDepth="0" Opacity="0.45"/>
+                  <DropShadowEffect Color="#5EAE87" BlurRadius="12" ShadowDepth="0" Opacity="0.45"/>
                 </Setter.Value>
               </Setter>
             </Trigger>
@@ -158,12 +158,12 @@ function New-StiTheme {
 
   <!-- ComboBox DEFAULT (sin x:Key: aplica a TODOS los ComboBox). WPF por default pinta el popup
        con colores de sistema (fondo blanco), lo que dejaba el contenido ilegible (texto claro sobre
-       blanco). Aca se estila el ToggleButton, el item seleccionado y el Popup con la paleta STI. -->
-  <Style x:Key="StiComboToggle" TargetType="ToggleButton">
+       blanco). Aca se estila el ToggleButton, el item seleccionado y el Popup con la paleta de la app. -->
+  <Style x:Key="AppComboToggle" TargetType="ToggleButton">
     <Setter Property="Template">
       <Setter.Value>
         <ControlTemplate TargetType="ToggleButton">
-          <Border x:Name="cbBorder" Background="{StaticResource StiInput}" BorderBrush="{StaticResource StiBorde}"
+          <Border x:Name="cbBorder" Background="{StaticResource AppInput}" BorderBrush="{StaticResource AppBorde}"
                   BorderThickness="1" CornerRadius="4">
             <Grid>
               <Grid.ColumnDefinitions>
@@ -171,12 +171,12 @@ function New-StiTheme {
                 <ColumnDefinition Width="Auto"/>
               </Grid.ColumnDefinitions>
               <Path x:Name="cbArrow" Grid.Column="1" Margin="0,0,8,0" VerticalAlignment="Center"
-                    Data="M0,0 L4,4 L8,0 Z" Fill="#6fb597"/>
+                    Data="M0,0 L4,4 L8,0 Z" Fill="#7DA792"/>
             </Grid>
           </Border>
           <ControlTemplate.Triggers>
             <Trigger Property="IsMouseOver" Value="True">
-              <Setter TargetName="cbBorder" Property="BorderBrush" Value="{StaticResource StiVerde}"/>
+              <Setter TargetName="cbBorder" Property="BorderBrush" Value="{StaticResource AppAccent}"/>
             </Trigger>
           </ControlTemplate.Triggers>
         </ControlTemplate>
@@ -185,9 +185,9 @@ function New-StiTheme {
   </Style>
 
   <Style TargetType="ComboBox">
-    <Setter Property="Background" Value="{StaticResource StiInput}"/>
-    <Setter Property="Foreground" Value="{StaticResource StiTexto}"/>
-    <Setter Property="BorderBrush" Value="{StaticResource StiBorde}"/>
+    <Setter Property="Background" Value="{StaticResource AppInput}"/>
+    <Setter Property="Foreground" Value="{StaticResource AppTexto}"/>
+    <Setter Property="BorderBrush" Value="{StaticResource AppBorde}"/>
     <Setter Property="BorderThickness" Value="1"/>
     <Setter Property="FontFamily" Value="Space Grotesk, Segoe UI"/>
     <Setter Property="FontSize" Value="12"/>
@@ -196,7 +196,7 @@ function New-StiTheme {
       <Setter.Value>
         <ControlTemplate TargetType="ComboBox">
           <Grid>
-            <ToggleButton x:Name="ToggleButton" Style="{StaticResource StiComboToggle}"
+            <ToggleButton x:Name="ToggleButton" Style="{StaticResource AppComboToggle}"
                           Focusable="False" ClickMode="Press"
                           IsChecked="{Binding IsDropDownOpen, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay}"/>
             <ContentPresenter x:Name="ContentSite" IsHitTestVisible="False" Margin="{TemplateBinding Padding}"
@@ -207,7 +207,7 @@ function New-StiTheme {
                    AllowsTransparency="True" Focusable="False" PopupAnimation="Slide">
               <Border x:Name="DropDownBorder" MinWidth="{TemplateBinding ActualWidth}"
                       MaxHeight="{TemplateBinding MaxDropDownHeight}"
-                      Background="{StaticResource StiCard}" BorderBrush="{StaticResource StiBorde}"
+                      Background="{StaticResource AppCard}" BorderBrush="{StaticResource AppBorde}"
                       BorderThickness="1" CornerRadius="4">
                 <ScrollViewer SnapsToDevicePixels="True">
                   <StackPanel IsItemsHost="True" KeyboardNavigation.DirectionalNavigation="Contained"/>
@@ -217,7 +217,7 @@ function New-StiTheme {
           </Grid>
           <ControlTemplate.Triggers>
             <Trigger Property="IsEnabled" Value="False">
-              <Setter Property="Foreground" Value="{StaticResource StiTexto3}"/>
+              <Setter Property="Foreground" Value="{StaticResource AppTexto3}"/>
             </Trigger>
           </ControlTemplate.Triggers>
         </ControlTemplate>
@@ -227,7 +227,7 @@ function New-StiTheme {
 
   <Style TargetType="ComboBoxItem">
     <Setter Property="Background" Value="Transparent"/>
-    <Setter Property="Foreground" Value="{StaticResource StiTexto}"/>
+    <Setter Property="Foreground" Value="{StaticResource AppTexto}"/>
     <Setter Property="FontFamily" Value="Space Grotesk, Segoe UI"/>
     <Setter Property="FontSize" Value="12"/>
     <Setter Property="Padding" Value="8,5"/>
@@ -240,12 +240,12 @@ function New-StiTheme {
           </Border>
           <ControlTemplate.Triggers>
             <Trigger Property="IsMouseOver" Value="True">
-              <Setter TargetName="itemBorder" Property="Background" Value="{StaticResource StiChipBg}"/>
-              <Setter Property="Foreground" Value="{StaticResource StiVerdeClaro}"/>
+              <Setter TargetName="itemBorder" Property="Background" Value="{StaticResource AppChipBg}"/>
+              <Setter Property="Foreground" Value="{StaticResource AppAccentClaro}"/>
             </Trigger>
             <Trigger Property="IsSelected" Value="True">
-              <Setter TargetName="itemBorder" Property="Background" Value="{StaticResource StiVerde}"/>
-              <Setter Property="Foreground" Value="{StaticResource StiVerdeDeep}"/>
+              <Setter TargetName="itemBorder" Property="Background" Value="{StaticResource AppAccent}"/>
+              <Setter Property="Foreground" Value="{StaticResource AppAccentDeep}"/>
             </Trigger>
           </ControlTemplate.Triggers>
         </ControlTemplate>

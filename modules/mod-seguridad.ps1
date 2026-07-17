@@ -1,11 +1,11 @@
-﻿# mod-seguridad.ps1 - cuentas STI, firewall, antivirus ESET, updates, reinicio pendiente.
+﻿# mod-seguridad.ps1 - cuentas admin, firewall, antivirus ESET, updates, reinicio pendiente.
 # Devuelve el contrato {category, items[], errors[]}. Cada check en try/catch → N/A + errors si falla.
 
-function Invoke-STIModSeguridad {
+function Invoke-ModSeguridad {
   param($Ctx)
   $items = @(); $errs = @()
 
-  # chk_cuentas_sti: cuentas admin gestionadas (definidas en STI_CUENTAS_ADMIN) activas; usuario actual NO admin.
+  # chk_cuentas_admin: cuentas admin gestionadas (definidas en FLEET_CUENTAS_ADMIN) activas; usuario actual NO admin.
   try {
     # SID well-known del grupo Administradores (locale-independent: "Administrators"/"Administradores").
     $admins = @(Get-LocalGroupMember -SID 'S-1-5-32-544' -ErrorAction Stop | ForEach-Object { ($_.Name -split '\\')[-1].ToLower() })
@@ -16,10 +16,10 @@ function Invoke-STIModSeguridad {
     $curIsAdmin = ($admins -contains $curUser) -and ($exentas -notcontains $curUser)
     $ok = ($faltan.Count -eq 0) -and (-not $curIsAdmin)
     $detAdmin = if ($faltan.Count) { "faltan cuentas admin: $($faltan -join ', ')" } else { 'cuentas admin OK' }
-    $items += New-CheckItem 'chk_cuentas_sti' 'Cuentas STI (admin)' (Get-StatusBool $ok) $true `
+    $items += New-CheckItem 'chk_cuentas_admin' 'Cuentas admin (gestionadas)' (Get-StatusBool $ok) $true `
       "$detAdmin · usuario_local_admin:$(if($curIsAdmin){'SÍ(mal)'}else{'no'})" `
       @{ admins = $admins }
-  } catch { $items += New-CheckItem 'chk_cuentas_sti' 'Cuentas STI (admin)' 'N/A' $true ''; $errs += "cuentas_sti: $($_.Exception.Message)" }
+  } catch { $items += New-CheckItem 'chk_cuentas_admin' 'Cuentas admin (gestionadas)' 'N/A' $true ''; $errs += "cuentas_admin: $($_.Exception.Message)" }
 
   # chk_firewall: todos los perfiles enabled.
   try {

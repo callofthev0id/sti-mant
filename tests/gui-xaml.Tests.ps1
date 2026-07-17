@@ -9,8 +9,8 @@ BeforeAll {
   . "$PSScriptRoot/../gui/lib/gui-tab-generar.ps1"
   . "$PSScriptRoot/../gui/lib/gui-xaml.ps1"
 }
-Describe "New-StiWindowXaml" {
-  BeforeAll { $script:xaml = New-StiWindowXaml -Hostname 'CLAUDE' -Version '1.0' }
+Describe "New-AppWindowXaml" {
+  BeforeAll { $script:xaml = New-AppWindowXaml -Hostname 'CLAUDE' -Version '1.0' }
   It "es XML bien formado" {
     { [xml]$xaml } | Should -Not -Throw
   }
@@ -32,12 +32,12 @@ Describe "New-StiWindowXaml" {
 
 # Carga WPF real: detecta refs de StaticResource irresolubles (p. ej. el Background del
 # Window root que apuntaba a un recurso de Window.Resources aun no parseado). Solo Windows+WPF.
-Describe "Get-StiWindow (carga WPF real)" {
+Describe "Get-AppWindow (carga WPF real)" {
   $script:wpfOk = $false
   try { Add-Type -AssemblyName PresentationFramework, PresentationCore, WindowsBase -ErrorAction Stop; $script:wpfOk = $true } catch {}
 
   It "XamlReader.Load instancia la ventana y los controles nombrados se encuentran" -Skip:(-not $script:wpfOk) {
-    $xaml = New-StiWindowXaml -Hostname 'CLAUDE' -Version '1.0'
+    $xaml = New-AppWindowXaml -Hostname 'CLAUDE' -Version '1.0'
     $rs = [runspacefactory]::CreateRunspace(); $rs.ApartmentState = 'STA'; $rs.Open()
     $ps = [powershell]::Create(); $ps.Runspace = $rs
     [void]$ps.AddScript({

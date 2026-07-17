@@ -8,13 +8,13 @@ Describe "ConvertTo-MantTsv" {
   It "emite en el orden del column-spec, semi/faltante vacío" {
     $items = @(
       (New-CheckItem -Key "chk_firewall" -Label "f" -Status "Ok"),
-      (New-CheckItem -Key "chk_cuentas_sti" -Label "c" -Status "Error"),
+      (New-CheckItem -Key "chk_cuentas_admin" -Label "c" -Status "Error"),
       (New-CheckItem -Key "chk_visor_eventos" -Label "v" -Status $null)
     )
     $tsv = ConvertTo-MantTsv -Items $items -Order $CHK_ORDER_TERM
     $cells = $tsv -split "`t"
     $cells.Count | Should -Be 26
-    $cells[0] | Should -Be "Error"   # chk_cuentas_sti (idx 0)
+    $cells[0] | Should -Be "Error"   # chk_cuentas_admin (idx 0)
     $cells[1] | Should -Be "Ok"      # chk_firewall (idx 1)
     $cells[5] | Should -Be ""        # chk_visor_eventos (idx 5, semi → vacío)
   }
@@ -27,11 +27,11 @@ Describe "ConvertTo-MantTsv" {
 }
 
 Describe "Get-SemColor" {
-  It "mapea estados a paleta STI" {
-    Get-SemColor "Ok"          | Should -Be "#43C961"
-    Get-SemColor "Advertencia" | Should -Be "#F2C03D"
-    Get-SemColor "Error"       | Should -Be "#E07820"
-    Get-SemColor "Crítico"     | Should -Be "#F05754"
+  It "mapea estados a la paleta de la app" {
+    Get-SemColor "Ok"          | Should -Be "#5EAE87"
+    Get-SemColor "Advertencia" | Should -Be "#D7A858"
+    Get-SemColor "Error"       | Should -Be "#C77539"
+    Get-SemColor "Crítico"     | Should -Be "#DA6A72"
     Get-SemColor "N/A"         | Should -Be "#C8C8C8"
     Get-SemColor ""            | Should -Be "#C8C8C8"
   }

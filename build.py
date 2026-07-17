@@ -59,9 +59,9 @@ def build_entry(entry_file: str, out_name: str, inline: str):
 def main():
     ver = sys.argv[1] if len(sys.argv) > 1 else "0.1"
     inline = build_inline()
-    build_entry("sti-mant.ps1", f"sti-mant-v{ver}.ps1", inline)
-    build_entry("sti-informe.ps1", f"sti-informe-v{ver}.ps1", inline)
-    build_entry("gui/sti-gui.ps1", f"sti-gui-v{ver}.ps1", build_inline(include_gui=True))
+    build_entry("fleet-mant.ps1", f"fleet-mant-v{ver}.ps1", inline)
+    build_entry("fleet-informe.ps1", f"fleet-informe-v{ver}.ps1", inline)
+    build_entry("gui/fleet-gui.ps1", f"fleet-gui-v{ver}.ps1", build_inline(include_gui=True))
 
 if __name__ == "__main__":
     main()
